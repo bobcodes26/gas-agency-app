@@ -419,16 +419,36 @@ td.mismatch-cell{background:#fff0f3!important;color:#9b1c2e!important;font-weigh
 td.ok-cell{background:#f0fff6!important;color:#0b6e3f!important;}
 
 /* Physical Count form */
-.phys-grid{display:grid;grid-template-columns:1fr;gap:8px;margin-bottom:14px;}
-.phys-row{display:grid;grid-template-columns:1fr 100px 100px;gap:6px;align-items:center;padding:8px 10px;background:#fff;border:1px solid var(--border);border-radius:10px;}
-.phys-row:first-child{background:var(--navy);border-color:var(--navy);border-radius:10px;}
-.phys-row:first-child .phys-cell{color:#fff;font-size:.62rem;font-weight:800;letter-spacing:.8px;text-transform:uppercase;}
-.phys-cell{font-size:.82rem;font-weight:600;color:var(--navy);}
-.phys-cell-lbl{display:flex;align-items:center;gap:6px;}
-.phys-cell-lbl i{color:var(--orange);font-size:.9rem;}
-.phys-cell input{width:100%;border:1.5px solid var(--border);border-radius:8px;padding:7px 8px;font-size:.85rem;font-weight:700;text-align:center;font-family:Barlow,sans-serif;color:var(--navy);background:#f8f9ff;transition:border-color .15s;}
-.phys-cell input:focus{outline:none;border-color:var(--orange);background:#fff;box-shadow:0 0 0 3px rgba(255,107,0,.1);}
-.phys-cell input:hover{border-color:var(--navy3);}
+/* Physical Stock Count — Table-based for guaranteed alignment */
+.phys-table{width:100%;border-collapse:separate;border-spacing:0 6px;margin-bottom:14px;}
+.phys-table thead tr th{
+  background:var(--navy);color:#fff;
+  font-size:.62rem;font-weight:800;letter-spacing:.8px;text-transform:uppercase;
+  padding:10px 12px;
+}
+.phys-table thead tr th:first-child{border-radius:10px 0 0 10px;text-align:left;width:44%;}
+.phys-table thead tr th:last-child{border-radius:0 10px 10px 0;}
+.phys-table thead tr th:not(:first-child){text-align:center;width:28%;}
+.phys-table tbody tr td{
+  background:#fff;border-top:1px solid var(--border);border-bottom:1px solid var(--border);
+  padding:8px 10px;vertical-align:middle;
+}
+.phys-table tbody tr td:first-child{
+  border-left:1px solid var(--border);border-radius:10px 0 0 10px;
+  font-size:.82rem;font-weight:700;color:var(--navy);
+}
+.phys-table tbody tr td:last-child{border-right:1px solid var(--border);border-radius:0 10px 10px 0;}
+.phys-table tbody tr:hover td{background:#f8f9ff;}
+.phys-cyl-lbl{display:flex;align-items:center;gap:7px;}
+.phys-cyl-dot{width:10px;height:10px;border-radius:50%;background:var(--orange);flex-shrink:0;}
+.phys-input{
+  width:100%;border:1.5px solid var(--border);border-radius:8px;
+  padding:8px 6px;font-size:.92rem;font-weight:800;text-align:center;
+  font-family:'Barlow Condensed',sans-serif;color:var(--navy);
+  background:#f4f7fc;transition:all .15s;display:block;
+}
+.phys-input:focus{outline:none;border-color:var(--orange);background:#fff;box-shadow:0 0 0 3px rgba(255,107,0,.12);}
+.phys-input::placeholder{color:var(--muted);font-weight:400;font-size:.8rem;}
 
 /* Mismatch result rows */
 .mismatch-item{display:flex;align-items:center;justify-content:space-between;padding:8px 12px;border-radius:8px;margin-bottom:6px;font-size:.82rem;}
@@ -978,26 +998,36 @@ td.ok-cell{background:#f0fff6!important;color:#0b6e3f!important;}
 
   <!-- Level-4: Physical Stock Count & Mismatch Detection -->
   <div class="ga-card mb-3" id="physCountCard">
-    <div class="ga-card-head"><i class="bi bi-clipboard-check-fill" style="color:var(--orange)"></i> Physical Stock Count
-      <span style="font-size:.65rem;font-weight:400;color:rgba(255,255,255,.5);margin-left:6px;">Counted vs System</span>
+    <div class="ga-card-head" style="background:linear-gradient(135deg,var(--navy),#1a3050);">
+      <span style="display:flex;align-items:center;gap:8px;">
+        <i class="bi bi-clipboard-check-fill" style="color:var(--orange);font-size:1.1rem;"></i>
+        <span>Physical Stock Count</span>
+      </span>
+      <span style="font-size:.62rem;font-weight:700;color:rgba(255,255,255,.45);background:rgba(255,255,255,.08);border-radius:20px;padding:2px 8px;">Counted vs System</span>
     </div>
     <div class="ga-card-body">
-      <!-- Header row rendered by renderPhysForm -->
-      <div class="phys-grid" id="physCountGrid">
-        <div class="phys-row">
-          <div class="phys-cell">Cylinder</div>
-          <div class="phys-cell" style="text-align:center">🏭 Godown</div>
-          <div class="phys-cell" style="text-align:center">🏪 Store</div>
-        </div>
-        <!-- Rows injected by ReconciliationModule.renderPhysForm() -->
-      </div>
+      <!-- Table-based physical count form -->
+      <table class="phys-table" id="physCountGrid">
+        <thead>
+          <tr>
+            <th>Cylinder Type</th>
+            <th>🏭 Godown</th>
+            <th>🏪 Store</th>
+          </tr>
+        </thead>
+        <tbody id="physCountBody">
+          <!-- Rows injected by ReconciliationModule.renderPhysForm() -->
+        </tbody>
+      </table>
       <!-- Mismatch results -->
       <div id="mismatchResult" style="display:none;margin-bottom:12px;"></div>
-      <div style="display:flex;gap:8px;">
-        <button class="btn-main" style="flex:2" onclick="ReconciliationModule.runCheck()">
-          <i class="bi bi-search"></i> Check Mismatch
+      <div style="display:flex;gap:10px;margin-top:4px;">
+        <button class="btn-main" style="flex:2;gap:8px;font-size:.95rem;" onclick="ReconciliationModule.runCheck()">
+          <i class="bi bi-check2-circle" style="font-size:1.1rem;"></i> Check Mismatch
         </button>
-        <button class="btn-alt" style="flex:1" onclick="ReconciliationModule.clearPhys()">Clear</button>
+        <button onclick="ReconciliationModule.clearPhys()" style="flex:1;border:1.5px solid var(--border);background:#fff;border-radius:12px;padding:12px;font-size:.85rem;font-weight:700;font-family:Barlow,sans-serif;cursor:pointer;color:var(--muted);transition:all .15s;" onmouseover="this.style.borderColor='var(--red)';this.style.color='var(--red)'" onmouseout="this.style.borderColor='var(--border)';this.style.color='var(--muted)'">
+          <i class="bi bi-x-circle"></i> Clear
+        </button>
       </div>
     </div>
   </div>
@@ -2692,22 +2722,19 @@ const ReconciliationModule = (() => {
 
   // ── Render physical count form rows ──────────────────────────
   const renderPhysForm = () => {
-    const grid = document.getElementById('physCountGrid');
-    if (!grid) return;
+    const tbody = document.getElementById('physCountBody');
+    if (!tbody) return;
     const saved = _loadPhys();
-    // Remove old data rows (keep header = first child)
-    while (grid.children.length > 1) grid.removeChild(grid.lastChild);
-
+    tbody.innerHTML = '';
     CYLINDER_TYPES.forEach(c => {
       const gVal = saved[c.id]?.godown != null ? saved[c.id].godown : '';
       const sVal = saved[c.id]?.store  != null ? saved[c.id].store  : '';
-      const row  = document.createElement('div');
-      row.className = 'phys-row';
-      row.innerHTML =
-        `<div class="phys-cell phys-cell-lbl"><i class="bi bi-cylinder"></i>${c.label}</div>` +
-        `<div class="phys-cell"><input type="number" min="0" inputmode="numeric" id="phys-god-${c.id}" placeholder="0" value="${gVal}"/></div>` +
-        `<div class="phys-cell"><input type="number" min="0" inputmode="numeric" id="phys-sto-${c.id}" placeholder="0" value="${sVal}"/></div>`;
-      grid.appendChild(row);
+      const tr = document.createElement('tr');
+      tr.innerHTML =
+        `<td><div class="phys-cyl-lbl"><span class="phys-cyl-dot"></span>${c.label}</div></td>` +
+        `<td><input class="phys-input" type="number" min="0" inputmode="numeric" id="phys-god-${c.id}" placeholder="—" value="${gVal}"/></td>` +
+        `<td><input class="phys-input" type="number" min="0" inputmode="numeric" id="phys-sto-${c.id}" placeholder="—" value="${sVal}"/></td>`;
+      tbody.appendChild(tr);
     });
   };
 
