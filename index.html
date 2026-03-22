@@ -422,22 +422,52 @@ td.ok-cell{background:#f0fff6!important;color:#0b6e3f!important;}
 
 /* Physical Count form */
 /* Physical Stock Count — Table-based for guaranteed alignment */
-.trk-refill-table{width:100%;border-collapse:separate;border-spacing:0 5px;margin-bottom:6px;}
-.trk-refill-table thead th{background:var(--navy);color:#fff;font-size:.6rem;font-weight:800;letter-spacing:.7px;text-transform:uppercase;padding:9px 10px;}
-.trk-refill-table thead th:first-child{border-radius:8px 0 0 8px;text-align:left;}
-.trk-refill-table thead th:last-child{border-radius:0 8px 8px 0;}
-.trk-refill-table thead th:not(:first-child){text-align:center;width:30%;}
-.trk-refill-table tbody tr td{background:#fff;border-top:1px solid var(--border);border-bottom:1px solid var(--border);padding:6px 8px;vertical-align:middle;}
-.trk-refill-table tbody tr td:first-child{border-left:1px solid var(--border);border-radius:8px 0 0 8px;font-size:.78rem;font-weight:700;color:var(--navy);white-space:nowrap;}
-.trk-refill-table tbody tr td:last-child{border-right:1px solid var(--border);border-radius:0 8px 8px 0;}
-.trk-refill-input{width:100%;border:1.5px solid var(--border);border-radius:7px;padding:6px 4px;font-size:.88rem;font-weight:800;text-align:center;font-family:'Barlow Condensed',sans-serif;color:var(--navy);background:#f4f7fc;transition:all .15s;}
-.trk-refill-input:focus{outline:none;border-color:var(--orange);background:#fff;box-shadow:0 0 0 3px rgba(255,107,0,.1);}
-.trk-rcv{background:#f0fff8 !important;}
-.trk-rcv .trk-refill-input{background:#d4f7e7;border-color:#00c97b;}
-.trk-rcv .trk-refill-input:focus{border-color:#00a563;box-shadow:0 0 0 3px rgba(0,201,123,.12);}
-.trk-ret{background:#fff4f0 !important;}
-.trk-ret .trk-refill-input{background:#ffe8e0;border-color:#ff8a50;}
-.trk-ret .trk-refill-input:focus{border-color:var(--orange);box-shadow:0 0 0 3px rgba(255,107,0,.12);}
+/* ── Truck Refill Grid Layout ─────────────────────────── */
+.trk-header{display:grid;grid-template-columns:1.5fr 1fr 1fr;gap:10px;
+  background:var(--navy);border-radius:10px;padding:10px 12px;margin-bottom:6px;}
+.trk-header span{color:#fff;font-size:.6rem;font-weight:800;letter-spacing:.7px;
+  text-transform:uppercase;text-align:center;}
+.trk-header span:first-child{text-align:left;color:rgba(255,255,255,.7);}
+.trk-header .trk-hdr-rcv{color:#00e68a;}
+.trk-header .trk-hdr-ret{color:#ff9a6c;}
+.trk-row{display:grid;grid-template-columns:1.5fr 1fr 1fr;gap:10px;
+  align-items:center;margin-bottom:8px;padding:8px 10px;
+  background:#fff;border:1px solid var(--border);border-radius:10px;}
+.trk-row:hover{border-color:var(--navy3);}
+.trk-cyl-name{font-size:.8rem;font-weight:700;color:var(--navy);
+  display:flex;align-items:center;gap:6px;min-width:0;}
+.trk-cyl-dot{width:8px;height:8px;border-radius:50%;background:var(--orange);flex-shrink:0;}
+.trk-input{height:44px;padding:8px;border-radius:8px;border:1.5px solid #d0d8e4;
+  text-align:center;font-size:1rem;font-weight:800;width:100%;
+  font-family:'Barlow Condensed',sans-serif;color:var(--navy);
+  background:#f4f7fc;transition:all .15s;display:block;}
+.trk-input:focus{outline:none;border-color:var(--orange);background:#fff;
+  box-shadow:0 0 0 3px rgba(255,107,0,.12);}
+.trk-input.rcv-input{background:#e8fdf2;border-color:#00c97b;}
+.trk-input.rcv-input:focus{border-color:#00a563;box-shadow:0 0 0 3px rgba(0,201,123,.12);}
+.trk-input.ret-input{background:#fff0ea;border-color:#ffb085;}
+.trk-input.ret-input:focus{border-color:var(--orange);box-shadow:0 0 0 3px rgba(255,107,0,.12);}
+@media(max-width:380px){
+  .trk-header,.trk-row{grid-template-columns:1.2fr 1fr 1fr;gap:6px;}
+  .trk-cyl-name{font-size:.72rem;}
+  .trk-input{height:40px;font-size:.9rem;}
+}
+/* ── Truck History Table ──────────────────────────────── */
+.trk-hist-wrap{overflow-x:auto;-webkit-overflow-scrolling:touch;border-radius:10px;}
+.trk-hist-table{width:100%;border-collapse:collapse;font-size:.72rem;min-width:560px;}
+.trk-hist-table th{background:var(--navy);color:rgba(255,255,255,.75);
+  font-size:.58rem;letter-spacing:.6px;text-transform:uppercase;
+  padding:8px 10px;white-space:nowrap;font-weight:800;}
+.trk-hist-table th:first-child{border-radius:0;}
+.trk-hist-table td{padding:8px 10px;border-bottom:1px solid var(--border);
+  white-space:nowrap;vertical-align:middle;}
+.trk-hist-table tr:last-child td{border-bottom:none;}
+.trk-hist-table tr:hover td{background:#f4f8ff;}
+.trk-hist-table .rcv-val{color:var(--green);font-weight:800;}
+.trk-hist-table .ret-val{color:var(--orange);font-weight:800;}
+.trk-hist-table .zero{color:var(--muted);font-weight:400;}
+/* ── Empty Return Module ─────────────────────────────── */
+.emp-ret-form{display:grid;gap:12px;}
 .phys-table{width:100%;border-collapse:separate;border-spacing:0 6px;margin-bottom:14px;}
 .phys-table thead tr th{
   background:var(--navy);color:#fff;
@@ -823,41 +853,51 @@ td.ok-cell{background:#f0fff6!important;color:#0b6e3f!important;}
   <div class="ga-card mb-3">
     <div class="ga-card-head"><i class="bi bi-plus-circle-fill"></i> Add Truck Refill</div>
     <div class="ga-card-body">
-      <form class="ga-form" id="trkRefillForm" onsubmit="submitTruckRefill(event)">
-        <!-- Category-wise Received / Returned table -->
-        <div class="mb-3">
-          <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px;">
-            <span class="form-label" style="margin:0">Cylinders Received &amp; Returned *</span>
-            <span style="font-size:.65rem;color:var(--muted);">Fill only applicable rows</span>
-          </div>
-          <table class="trk-refill-table">
-            <thead>
-              <tr>
-                <th>Cylinder Type</th>
-                <th style="color:#00c97b;">↓ Received</th>
-                <th style="color:#ff8a50;">↑ Empty Out</th>
-              </tr>
-            </thead>
-            <tbody id="trkRefillBody"></tbody>
-          </table>
-          <div style="display:flex;gap:16px;padding:4px 2px;font-size:.68rem;color:var(--muted);">
-            <span style="display:flex;align-items:center;gap:4px;"><span style="width:10px;height:10px;background:#d4f7e7;border-radius:3px;display:inline-block;"></span>Green = Refill received from company</span>
-            <span style="display:flex;align-items:center;gap:4px;"><span style="width:10px;height:10px;background:#ffe8e0;border-radius:3px;display:inline-block;"></span>Orange = Empty returned to company</span>
-          </div>
-        </div>
+      <form class="ga-form" id="trkRefillForm" onsubmit="submitTruckRefill(event)" novalidate>
+
+        <!-- Truck Info Row -->
         <div class="row g-2 mb-3">
           <div class="col-6">
-            <label class="form-label">Truck No.</label>
-            <input type="text" id="trk-no" class="form-control" placeholder="e.g. OD02AB1234"
-                   oninput="this.value=this.value.toUpperCase()"/>
+            <label class="form-label">Truck No. <span style="color:var(--red)">*</span></label>
+            <input type="text" id="trk-no" class="form-control" placeholder="OD02AB1234"
+                   required autocomplete="off" oninput="this.value=this.value.toUpperCase()"/>
           </div>
           <div class="col-6">
-            <label class="form-label">Date</label>
-            <input type="date" id="trk-date" class="form-control"/>
+            <label class="form-label">Date <span style="color:var(--red)">*</span></label>
+            <input type="date" id="trk-date" class="form-control" required/>
           </div>
         </div>
+        <!-- Validation error -->
+        <div id="trkFormError" style="display:none;background:#ffe0e6;color:#9b1c2e;border-radius:8px;
+          padding:8px 12px;font-size:.78rem;font-weight:700;margin-bottom:10px;">
+          <i class="bi bi-exclamation-triangle-fill"></i> <span id="trkFormErrorMsg"></span>
+        </div>
+
+        <!-- Category-wise grid -->
+        <div class="mb-3">
+          <!-- Column headers -->
+          <div class="trk-header">
+            <span>Cylinder Type</span>
+            <span class="trk-hdr-rcv">↓ Refill In</span>
+            <span class="trk-hdr-ret">↑ Empty Out</span>
+          </div>
+          <!-- Rows injected by renderTrkRefillForm() -->
+          <div id="trkRefillBody"></div>
+          <!-- Legend -->
+          <div style="display:flex;gap:14px;padding:6px 2px 0;flex-wrap:wrap;">
+            <span style="display:flex;align-items:center;gap:5px;font-size:.65rem;color:var(--muted);">
+              <span style="width:12px;height:12px;background:#e8fdf2;border:1.5px solid #00c97b;border-radius:3px;display:inline-block;"></span>
+              Green = Refill cylinders received from company
+            </span>
+            <span style="display:flex;align-items:center;gap:5px;font-size:.65rem;color:var(--muted);">
+              <span style="width:12px;height:12px;background:#fff0ea;border:1.5px solid #ffb085;border-radius:3px;display:inline-block;"></span>
+              Orange = Empty cylinders returned to company
+            </span>
+          </div>
+        </div>
+
         <button type="submit" class="btn-main">
-          <i class="bi bi-fuel-pump-fill"></i> Update Godown Stock
+          <i class="bi bi-check-circle-fill"></i> Save Truck Refill
         </button>
       </form>
     </div>
@@ -865,17 +905,79 @@ td.ok-cell{background:#f0fff6!important;color:#0b6e3f!important;}
 
   <!-- Godown Stock -->
   <div class="ga-card mb-3">
-    <div class="ga-card-head"><i class="bi bi-building"></i> Current Godown Stock (Refill)</div>
+    <div class="ga-card-head" style="justify-content:space-between;">
+      <span style="display:flex;align-items:center;gap:8px;">
+        <i class="bi bi-building"></i> Current Godown Stock
+      </span>
+    </div>
     <div class="stk-wrap">
       <table class="stk-table">
-        <thead><tr><th>Cylinder</th><th style="color:#00c97b">Refill</th></tr></thead>
+        <thead>
+          <tr>
+            <th>Cylinder</th>
+            <th style="color:#00c97b">Refill</th>
+            <th style="color:#ff3b5c">Empty</th>
+          </tr>
+        </thead>
         <tbody id="trkGodownStock"></tbody>
       </table>
     </div>
   </div>
 
-  <div class="sec-title"><i class="bi bi-clock-history"></i> Recent Truck Refills</div>
-  <div id="trkLog"></div>
+  <!-- Empty Return: Store → Godown -->
+  <div class="ga-card mb-3">
+    <div class="ga-card-head" style="background:linear-gradient(135deg,#1a3050,var(--navy));">
+      <i class="bi bi-arrow-return-left" style="color:var(--amber)"></i> Return Empty Cylinders to Godown
+      <span style="margin-left:auto;font-size:.6rem;color:rgba(255,255,255,.45);font-weight:400;">Store → Godown</span>
+    </div>
+    <div class="ga-card-body">
+      <p style="font-size:.72rem;color:var(--muted);margin-bottom:12px;">
+        When Store empties accumulate and are sent back to Godown.
+      </p>
+      <form class="ga-form" id="empRetForm" onsubmit="submitEmptyReturn(event)" novalidate>
+        <div class="row g-2 mb-3">
+          <div class="col-6">
+            <label class="form-label">Cylinder Type *</label>
+            <select id="er-cyl" class="form-select" required>
+              <option value="">— Select —</option>
+            </select>
+          </div>
+          <div class="col-6">
+            <label class="form-label">Qty Returned *</label>
+            <input type="number" id="er-qty" class="form-control" min="1"
+                   inputmode="numeric" placeholder="0" required/>
+          </div>
+        </div>
+        <div class="mb-3">
+          <label class="form-label">Date *</label>
+          <input type="date" id="er-date" class="form-control" required/>
+        </div>
+        <div id="erFormError" style="display:none;background:#ffe0e6;color:#9b1c2e;
+          border-radius:8px;padding:8px 12px;font-size:.78rem;font-weight:700;margin-bottom:10px;">
+          <i class="bi bi-exclamation-triangle-fill"></i> <span id="erFormErrorMsg"></span>
+        </div>
+        <button type="submit" class="btn-main" style="background:var(--amber);">
+          <i class="bi bi-arrow-return-left"></i> Transfer to Godown
+        </button>
+      </form>
+    </div>
+  </div>
+
+  <!-- History Log -->
+  <div class="ga-card mb-3">
+    <div class="ga-card-head" style="justify-content:space-between;flex-wrap:wrap;gap:8px;">
+      <span style="display:flex;align-items:center;gap:8px;">
+        <i class="bi bi-clock-history"></i> Truck Refill History
+      </span>
+      <input type="date" id="trkHistFilter" onchange="renderTrkHistory(this.value||undefined)"
+        style="background:rgba(255,255,255,.12);border:1px solid rgba(255,255,255,.2);
+        border-radius:8px;color:#fff;padding:4px 8px;font-size:.72rem;cursor:pointer;
+        font-family:Barlow,sans-serif;"/>
+    </div>
+    <div class="ga-card-body" style="padding:10px;">
+      <div id="trkLog"></div>
+    </div>
+  </div>
 </div>
 
 <!-- TRANSFER -->
@@ -1327,6 +1429,12 @@ const emptyState = (icon, msg) =>
 
 // Populate all selects
 const fillSelects = () => {
+  // Populate Empty Return cylinder select
+  const erCyl = document.getElementById('er-cyl');
+  if (erCyl && erCyl.options.length <= 1) {
+    erCyl.innerHTML = '<option value="">— Select —</option>' +
+      CYLINDER_TYPES.map(c => `<option value="${c.id}">${c.label}</option>`).join('');
+  }
   const selects = ['del-cyl','trk-cyl','trf-cyl','adj-cyl'];
   selects.forEach(sid => {
     const el = document.getElementById(sid);
@@ -1482,28 +1590,81 @@ const renderDeliveryPage = () => {
 
 // ─── TRUCK REFILL PAGE ────────────────────────────────────────────
 const renderTruckPage = () => {
-  renderTrkRefillForm(); // init category-wise input table
+  renderTrkRefillForm(); // init category-wise grid
+
+  // Godown stock table
   let rows = '';
   CYLINDER_TYPES.forEach(c=>{
-    const g = stock[c.id]?.godown||{refill:0};
-    rows += `<tr><td class="cyl-nm">${c.label}</td><td class="rv">${g.refill}</td></tr>`;
+    const g = stock[c.id]?.godown||{refill:0,empty:0};
+    rows += `<tr>
+      <td class="cyl-nm">${c.label}</td>
+      <td class="rv">${g.refill}</td>
+      <td class="ev">${g.empty}</td>
+    </tr>`;
   });
   document.getElementById('trkGodownStock').innerHTML = rows;
 
-  const recent = [...truckRefills].sort((a,b)=>(b.ts||'').localeCompare(a.ts||'')).slice(0,10);
-  if(recent.length===0){
-    document.getElementById('trkLog').innerHTML = emptyState('fuel-pump','No truck refills recorded yet');
+  renderTrkHistory(); // history log
+};
+
+const renderTrkHistory = (filterDate) => {
+  const el = document.getElementById('trkLog');
+  if (!el) return;
+
+  let list = [...truckRefills].sort((a,b)=>(b.ts||'').localeCompare(a.ts||''));
+  if (filterDate) list = list.filter(t => t.date === filterDate);
+  const show = list.slice(0, 30);
+
+  if (show.length === 0) {
+    el.innerHTML = emptyState('fuel-pump', filterDate ? 'No records for this date' : 'No truck refills recorded yet');
     return;
   }
-  document.getElementById('trkLog').innerHTML = recent.map(t=>`
-    <div class="log-row">
-      <div class="log-icon trk"><i class="bi bi-fuel-pump-fill"></i></div>
-      <div class="log-body">
-        <div class="log-name">${t.truckNo || 'Truck Refill'}</div>
-        <div class="log-meta">${cylBadge(t.cylType)} → 🏭 Godown · ${fmtDate(t.date)}</div>
-      </div>
-      <div class="text-center"><div class="log-qty" style="color:var(--amber)">${t.qty}</div><div class="log-ql">CYL</div></div>
-    </div>`).join('');
+
+  // Build history rows
+  const bodyRows = show.map(t => {
+    // Support both old (single cylType) and new (entries[]) records
+    const vals = {};
+    CYLINDER_TYPES.forEach(c => { vals[c.id] = { rcv: 0, ret: 0 }; });
+    if (t.entries && Array.isArray(t.entries)) {
+      t.entries.forEach(e => { if (vals[e.cylType]) { vals[e.cylType].rcv = e.received||0; vals[e.cylType].ret = e.returned||0; } });
+    } else if (t.cylType) {
+      if (vals[t.cylType]) vals[t.cylType].rcv = t.qty || 0;
+    }
+
+    const cellsHtml = CYLINDER_TYPES.map(c => {
+      const r = vals[c.id].rcv, ret = vals[c.id].ret;
+      return `<td class="${r>0?'rcv-val':'zero'}">${r||'—'}</td>
+              <td class="${ret>0?'ret-val':'zero'}">${ret||'—'}</td>`;
+    }).join('');
+
+    return `<tr>
+      <td style="font-weight:700;white-space:nowrap;">${fmtDate(t.date)}</td>
+      <td style="font-weight:700;color:var(--navy);white-space:nowrap;">${t.truckNo||'—'}</td>
+      ${cellsHtml}
+    </tr>`;
+  }).join('');
+
+  const colHeaders = CYLINDER_TYPES.map(c =>
+    `<th colspan="2" style="background:var(--navy2);">${c.label.replace(' Domestic','').replace(' Commercial','').replace(' kg','kg')}</th>`
+  ).join('');
+  const subHeaders = CYLINDER_TYPES.map(() =>
+    `<th style="color:#00e68a;min-width:48px">↓ In</th><th style="color:#ff9a6c;min-width:48px">↑ Out</th>`
+  ).join('');
+
+  el.innerHTML = `
+  <div class="trk-hist-wrap">
+    <table class="trk-hist-table">
+      <thead>
+        <tr>
+          <th rowspan="2">Date</th>
+          <th rowspan="2">Truck No.</th>
+          ${colHeaders}
+        </tr>
+        <tr>${subHeaders}</tr>
+      </thead>
+      <tbody>${bodyRows}</tbody>
+    </table>
+  </div>`;
 };
 
 // ─── TRANSFER PAGE ────────────────────────────────────────────────
@@ -1600,25 +1761,48 @@ const submitDelivery = (e) => {
 
 // ─── Build truck refill input rows ───────────────────────────────
 const renderTrkRefillForm = () => {
-  const tbody = document.getElementById('trkRefillBody');
-  if (!tbody || tbody.children.length > 0) return; // already rendered
+  const container = document.getElementById('trkRefillBody');
+  if (!container || container.children.length > 0) return; // already rendered
   CYLINDER_TYPES.forEach(c => {
-    const tr = document.createElement('tr');
-    tr.innerHTML =
-      `<td>${c.label}</td>` +
-      `<td class="trk-rcv"><input class="trk-refill-input" type="number" min="0" inputmode="numeric"
-        id="trk-rcv-${c.id}" placeholder="0"
-        oninput="document.getElementById('trk-ret-${c.id}').value=this.value||''"/></td>` +
-      `<td class="trk-ret"><input class="trk-refill-input" type="number" min="0" inputmode="numeric"
-        id="trk-ret-${c.id}" placeholder="0"/></td>`;
-    tbody.appendChild(tr);
+    const row = document.createElement('div');
+    row.className = 'trk-row';
+    row.innerHTML =
+      `<div class="trk-cyl-name"><span class="trk-cyl-dot"></span>${c.label}</div>` +
+      `<div><input class="trk-input rcv-input" type="number" min="0" inputmode="numeric"
+         id="trk-rcv-${c.id}" placeholder="0"
+         oninput="syncRetInput('${c.id}', this.value)"/></div>` +
+      `<div><input class="trk-input ret-input" type="number" min="0" inputmode="numeric"
+         id="trk-ret-${c.id}" placeholder="0"/></div>`;
+    container.appendChild(row);
   });
+};
+
+const syncRetInput = (cylId, val) => {
+  const retEl = document.getElementById('trk-ret-' + cylId);
+  if (retEl && retEl.value === '' || retEl.value === '0') {
+    retEl.value = val || '';
+  }
+};
+
+// Show/hide truck form error banner
+const trkFormErr = (msg) => {
+  const el = document.getElementById('trkFormError');
+  const ms = document.getElementById('trkFormErrorMsg');
+  if (!el) return;
+  if (msg) { ms.textContent = msg; el.style.display = 'block'; }
+  else      { el.style.display = 'none'; }
 };
 
 const submitTruckRefill = (e) => {
   e.preventDefault();
+  trkFormErr(null); // clear previous errors
+
+  // ── Strict validation ────────────────────────────────────────
   const truckNo = document.getElementById('trk-no').value.trim();
-  const date    = document.getElementById('trk-date').value || today();
+  const date    = document.getElementById('trk-date').value;
+
+  if (!truckNo) { trkFormErr('Truck number is required.'); return; }
+  if (!date)    { trkFormErr('Date is required.'); return; }
 
   let totalRcv = 0, totalRet = 0;
   const entries = [];
@@ -1626,8 +1810,8 @@ const submitTruckRefill = (e) => {
   CYLINDER_TYPES.forEach(c => {
     const rcvEl = document.getElementById('trk-rcv-' + c.id);
     const retEl = document.getElementById('trk-ret-' + c.id);
-    const rcv   = rcvEl && rcvEl.value !== '' ? parseInt(rcvEl.value) : 0;
-    const ret   = retEl && retEl.value !== '' ? parseInt(retEl.value) : 0;
+    const rcv   = rcvEl && rcvEl.value !== '' ? Math.max(0, parseInt(rcvEl.value)||0) : 0;
+    const ret   = retEl && retEl.value !== '' ? Math.max(0, parseInt(retEl.value)||0) : 0;
     if (rcv > 0 || ret > 0) {
       entries.push({ cylType: c.id, received: rcv, returned: ret });
       totalRcv += rcv;
@@ -1636,42 +1820,101 @@ const submitTruckRefill = (e) => {
   });
 
   if (entries.length === 0) {
-    toast('Enter at least one cylinder count.', 'error'); return;
+    trkFormErr('Enter at least one cylinder quantity.'); return;
   }
 
-  // Apply stock changes per cylinder type
+  // ── Stock safety check (prevent negative empty) ───────────────
+  for (const entry of entries) {
+    if (entry.returned > 0) {
+      const availEmpty = stock[entry.cylType]?.godown?.empty || 0;
+      if (entry.returned > availEmpty) {
+        const cLabel = CYLINDER_TYPES.find(c => c.id === entry.cylType)?.label || entry.cylType;
+        trkFormErr(`Not enough empty cylinders in Godown for ${cLabel}. Available: ${availEmpty}`);
+        return;
+      }
+    }
+  }
+
+  // ── Apply stock changes — SAFE CONDITIONAL LOGIC ─────────────
   entries.forEach(entry => {
     if (!stock[entry.cylType]) return;
-    stock[entry.cylType].godown.refill += entry.received;        // +Refill received
-    stock[entry.cylType].godown.empty  = Math.max(0,
-      (stock[entry.cylType].godown.empty || 0) - entry.returned); // -Empty returned
+    // Only increase refill if received > 0
+    if (entry.received > 0) {
+      stock[entry.cylType].godown.refill += entry.received;
+    }
+    // Only decrease empty if returned > 0 (NEVER subtract when 0)
+    if (entry.returned > 0) {
+      stock[entry.cylType].godown.empty = Math.max(0,
+        (stock[entry.cylType].godown.empty || 0) - entry.returned);
+    }
   });
 
-  // One consolidated record per refill event
+  // ── Build history record ──────────────────────────────────────
   const trkRecord = {
     entries, truckNo, date,
     totalReceived: totalRcv, totalReturned: totalRet,
-    ts: new Date().toISOString(), agencyId: _saas.agencyId
+    ts: new Date().toISOString(), agencyId: _saas.agencyId,
+    // legacy compat fields
+    cylType: entries[0]?.cylType || '',
+    qty:     totalRcv
   };
-  // Legacy compat: also store cylType+qty for old log rendering
-  trkRecord.cylType = entries[0]?.cylType || '';
-  trkRecord.qty     = totalRcv;
 
   truckRefills.push(trkRecord);
   save();
   DriveSync.pushTruckRefill(trkRecord);
 
-  // Reset inputs
+  // ── Reset form ────────────────────────────────────────────────
   CYLINDER_TYPES.forEach(c => {
     const rcvEl = document.getElementById('trk-rcv-' + c.id);
     const retEl = document.getElementById('trk-ret-' + c.id);
     if (rcvEl) rcvEl.value = '';
     if (retEl) retEl.value = '';
   });
-  document.getElementById('trk-no').value   = '';
-  document.getElementById('trk-date').value  = '';
+  document.getElementById('trk-no').value  = '';
+  document.getElementById('trk-date').value = '';
 
-  toast(`Truck refill saved — ${totalRcv} received, ${totalRet} empties returned.`);
+  toast(`✓ Truck refill saved — ${totalRcv} received, ${totalRet} empties returned.`);
+  refresh();
+};
+
+// ─── EMPTY RETURN: Store → Godown ────────────────────────────────
+const submitEmptyReturn = (e) => {
+  e.preventDefault();
+  const errEl  = document.getElementById('erFormError');
+  const errMsg = document.getElementById('erFormErrorMsg');
+  const showErr = (msg) => { errMsg.textContent = msg; errEl.style.display = 'block'; };
+  const hideErr = () => { errEl.style.display = 'none'; };
+  hideErr();
+
+  const cylType = document.getElementById('er-cyl').value;
+  const qty     = parseInt(document.getElementById('er-qty').value);
+  const date    = document.getElementById('er-date').value;
+
+  if (!cylType) { showErr('Please select cylinder type.'); return; }
+  if (!qty || qty < 1) { showErr('Enter a valid quantity.'); return; }
+  if (!date) { showErr('Date is required.'); return; }
+
+  const availStoreEmpty = stock[cylType]?.store?.empty || 0;
+  if (qty > availStoreEmpty) {
+    showErr(`Not enough empty cylinders in Store. Available: ${availStoreEmpty}`); return;
+  }
+
+  // Stock update: Store Empty ↓, Godown Empty ↑
+  stock[cylType].store.empty  = Math.max(0, (stock[cylType].store.empty  || 0) - qty);
+  stock[cylType].godown.empty =              (stock[cylType].godown.empty || 0) + qty;
+
+  transfers.push({
+    cylType, qty, date,
+    ts: new Date().toISOString(), agencyId: _saas.agencyId,
+    from: 'store_empty', to: 'godown_empty'
+  });
+  save();
+
+  document.getElementById('er-cyl').value  = '';
+  document.getElementById('er-qty').value  = '';
+  document.getElementById('er-date').value = '';
+
+  toast(`✓ ${qty} × ${cylLabel(cylType)} empty cylinders moved to Godown.`);
   refresh();
 };
 
