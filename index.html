@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8"/>
-<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
 <title>GasTrack — Agency Management</title>
 <link rel="preconnect" href="https://fonts.googleapis.com"/>
 <link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@500;700;800;900&family=Barlow:wght@400;500;600;700&display=swap" rel="stylesheet"/>
@@ -136,9 +136,33 @@ body{font-family:'Barlow',sans-serif;background:var(--bg);color:var(--text);padd
 .tot-lbl{font-weight:600;color:var(--navy);}
 .tot-val{font-family:'Barlow Condensed',sans-serif;font-size:1.5rem;font-weight:900;color:var(--orange);}
 
+/* ── TABLET (600px+) ─────────────────────────────── */
 @media(min-width:600px){
-  .page{padding:16px;max-width:640px;margin:0 auto;}
+  body{padding-bottom:0;}
+  .page{padding:20px;max-width:860px;margin:0 auto;}
   .stat-grid{grid-template-columns:repeat(4,1fr);}
+  .bottom-nav{display:none!important;}
+  .app-header{padding:0 24px;}
+  .logo-text{font-size:1.45rem;}
+  /* Tablet nav tabs above content */
+  .desk-tabs{display:flex!important;}
+}
+
+/* ── DESKTOP (960px+) — Sidebar layout ──────────── */
+@media(min-width:960px){
+  body{display:flex;flex-direction:column;min-height:100vh;overflow-x:hidden;}
+  .app-header{height:60px;}
+  .app-body-wrap{display:flex;flex:1;max-width:1280px;margin:0 auto;width:100%;padding:24px 24px 24px 0;}
+  .desk-sidebar{display:flex!important;flex-direction:column;width:200px;flex-shrink:0;padding:8px 0;position:sticky;top:60px;height:calc(100vh - 60px);overflow-y:auto;align-self:flex-start;}
+  .desk-sidebar .bnav-item{flex-direction:row;justify-content:flex-start;gap:12px;padding:11px 18px;border-radius:10px;margin:2px 8px;font-size:.78rem;letter-spacing:.3px;text-transform:capitalize;width:calc(100% - 16px);}
+  .desk-sidebar .bnav-item i{font-size:1.1rem;width:20px;}
+  .desk-sidebar .bnav-item.active{background:rgba(255,107,0,.1);color:var(--orange);}
+  .desk-sidebar .bnav-item.active i{color:var(--orange);}
+  .desk-content{flex:1;min-width:0;padding-left:12px;}
+  .page{max-width:100%;padding:0;}
+  .stat-grid{grid-template-columns:repeat(4,1fr);}
+  .bottom-nav{display:none!important;}
+  .desk-tabs{display:none!important;}
 }
 
 /* CONSUMER PAGE */
@@ -395,12 +419,16 @@ td.mismatch-cell{background:#fff0f3!important;color:#9b1c2e!important;font-weigh
 td.ok-cell{background:#f0fff6!important;color:#0b6e3f!important;}
 
 /* Physical Count form */
-.phys-grid{display:grid;grid-template-columns:1fr;gap:1px;background:var(--border);border-radius:10px;overflow:hidden;margin-bottom:12px;}
-.phys-row{background:var(--card);display:grid;grid-template-columns:1fr 90px 90px;gap:0;align-items:center;}
-.phys-row:first-child{background:#f8f9ff;font-size:.65rem;font-weight:800;letter-spacing:.5px;text-transform:uppercase;color:var(--muted);}
-.phys-cell{padding:8px 10px;font-size:.8rem;}
-.phys-cell input{width:100%;border:1px solid var(--border);border-radius:6px;padding:4px 6px;font-size:.8rem;text-align:center;font-family:Barlow,sans-serif;}
-.phys-cell input:focus{outline:none;border-color:var(--orange);}
+.phys-grid{display:grid;grid-template-columns:1fr;gap:8px;margin-bottom:14px;}
+.phys-row{display:grid;grid-template-columns:1fr 100px 100px;gap:6px;align-items:center;padding:8px 10px;background:#fff;border:1px solid var(--border);border-radius:10px;}
+.phys-row:first-child{background:var(--navy);border-color:var(--navy);border-radius:10px;}
+.phys-row:first-child .phys-cell{color:#fff;font-size:.62rem;font-weight:800;letter-spacing:.8px;text-transform:uppercase;}
+.phys-cell{font-size:.82rem;font-weight:600;color:var(--navy);}
+.phys-cell-lbl{display:flex;align-items:center;gap:6px;}
+.phys-cell-lbl i{color:var(--orange);font-size:.9rem;}
+.phys-cell input{width:100%;border:1.5px solid var(--border);border-radius:8px;padding:7px 8px;font-size:.85rem;font-weight:700;text-align:center;font-family:Barlow,sans-serif;color:var(--navy);background:#f8f9ff;transition:border-color .15s;}
+.phys-cell input:focus{outline:none;border-color:var(--orange);background:#fff;box-shadow:0 0 0 3px rgba(255,107,0,.1);}
+.phys-cell input:hover{border-color:var(--navy3);}
 
 /* Mismatch result rows */
 .mismatch-item{display:flex;align-items:center;justify-content:space-between;padding:8px 12px;border-radius:8px;margin-bottom:6px;font-size:.82rem;}
@@ -445,13 +473,13 @@ td.ok-cell{background:#f0fff6!important;color:#0b6e3f!important;}
 /* Firebase sync dot */
 
 /* Agency Setup Modal */
-.asm-overlay{position:fixed;inset:0;background:rgba(0,0,0,.65);z-index:10002;display:none;align-items:center;justify-content:center;padding:16px;}
-.asm-overlay.show{display:flex;}
-.asm-box{background:#fff;border-radius:20px;width:100%;max-width:400px;overflow:hidden;box-shadow:0 24px 60px rgba(0,0,0,.3);}
-.asm-head{background:linear-gradient(135deg,var(--navy),#1d3557);padding:20px 20px 16px;color:#fff;}
-.asm-title{font-family:'Barlow Condensed',sans-serif;font-size:1.4rem;font-weight:900;letter-spacing:.5px;}
-.asm-sub{font-size:.72rem;color:rgba(255,255,255,.55);margin-top:3px;}
-.asm-body{padding:18px;}
+
+
+
+
+
+
+
 
 /* Virtual List for Consumers (50k support) */
 #consVirtList{overflow-y:auto;-webkit-overflow-scrolling:touch;position:relative;scroll-behavior:smooth;}
@@ -473,35 +501,6 @@ td.ok-cell{background:#f0fff6!important;color:#0b6e3f!important;}
 <!-- ░░ reCAPTCHA container (Firebase Phone Auth) ░░ -->
 
 <!-- ░░ AGENCY SETUP MODAL ░░ -->
-<div class="asm-overlay" id="agencySetupModal">
-  <div class="asm-box">
-    <div class="asm-head">
-      <div class="asm-title"><i class="bi bi-building"></i> Set Up Your Agency</div>
-      <div class="asm-sub">Your gas distributor profile — takes 30 seconds</div>
-    </div>
-    <div class="asm-body">
-      <div class="mb-3">
-        <label class="form-label">Distributor / Agency Name *</label>
-        <input type="text" id="asm-agency-name" class="form-control" placeholder="e.g. Sharma Gas Agency"/>
-      </div>
-      <div class="mb-3">
-        <label class="form-label">Owner Name *</label>
-        <input type="text" id="asm-owner-name" class="form-control" placeholder="Your full name"/>
-      </div>
-      <div class="mb-3">
-        <label class="form-label">Your Role</label>
-        <select id="asm-role" class="form-select">
-          <option value="owner">👑 Owner / Proprietor</option>
-          <option value="manager">💼 Manager</option>
-        </select>
-      </div>
-      <button class="btn-main w-100" onclick="AgencyModule.completeSetup()">
-        <i class="bi bi-check-circle-fill"></i> Complete Setup &amp; Enter System
-      </button>
-      <p style="font-size:.65rem;color:var(--muted);text-align:center;margin-top:10px;">Data stored locally — optionally sync to Firebase</p>
-    </div>
-  </div>
-</div>
 
 <!-- ═══════════════ LOGIN SCREEN (Level-3 Feature 4) ═══════════ -->
 <div id="loginScreen">
@@ -546,7 +545,7 @@ td.ok-cell{background:#f0fff6!important;color:#0b6e3f!important;}
   </div>
   <div class="header-right">
     <!-- Agency name badge -->
-    <div id="agencyBadge" class="agency-badge" onclick="AgencyModule.openProfile()" style="display:none">
+    <div id="agencyBadge" class="agency-badge" style="display:none">
       <span class="ab-name" id="agencyBadgeName">Agency</span>
     </div>
     <!-- User chip: name + role only -->
@@ -563,11 +562,53 @@ td.ok-cell{background:#f0fff6!important;color:#0b6e3f!important;}
   </div>
 </header>
 
-<div id="auditPill" style="display:none"><span id="auditPillText"></span></div>
+<div id="auditPill" style="display:none"><div id="gdModal" style="display:none"><input id="gdUrlInput"/><div id="gdStatusLine"></div></div><div id="agencySetupModal" style="display:none"><input id="asm-agency-name"/><input id="asm-owner-name"/><select id="asm-role"><option value="owner">Owner</option></select></div><span id="auditPillText"></span></div>
 <!-- Hidden analytics placeholders for JS compat -->
 <div style="display:none"><span id="analyticsDate"></span><span id="an-total"></span><span id="an-total-cyl"></span><span id="an-14k2"></span><span id="an-19k"></span><span id="an-35k"></span><span id="an-5k"></span><span id="an-other"></span><span id="an-percent"></span><div id="an-progress"></div></div>
 <!-- TOAST -->
 <div class="toast-bar" id="toastBar"></div>
+
+<!-- ── TABLET NAV TABS (hidden on mobile, visible 600-959px) ── -->
+<nav class="desk-tabs" style="display:none;background:var(--navy);border-bottom:1px solid var(--navy3);padding:0 16px;gap:4px;overflow-x:auto;-webkit-overflow-scrolling:touch;">
+  <button class="bnav-item active" id="dt-dashboard" onclick="nav('dashboard')" style="flex-direction:row;gap:6px;padding:10px 14px;border-radius:0;height:46px;font-size:.72rem;">
+    <i class="bi bi-grid-fill"></i>Dashboard</button>
+  <button class="bnav-item" id="dt-delivery" onclick="nav('delivery')" style="flex-direction:row;gap:6px;padding:10px 14px;border-radius:0;height:46px;font-size:.72rem;">
+    <i class="bi bi-truck"></i>Delivery</button>
+  <button class="bnav-item" id="dt-truck" onclick="nav('truck')" style="flex-direction:row;gap:6px;padding:10px 14px;border-radius:0;height:46px;font-size:.72rem;">
+    <i class="bi bi-fuel-pump-fill"></i>Refill</button>
+  <button class="bnav-item" id="dt-transfer" onclick="nav('transfer')" style="flex-direction:row;gap:6px;padding:10px 14px;border-radius:0;height:46px;font-size:.72rem;">
+    <i class="bi bi-arrow-left-right"></i>Transfer</button>
+  <button class="bnav-item" id="dt-consumers" onclick="nav('consumers')" style="flex-direction:row;gap:6px;padding:10px 14px;border-radius:0;height:46px;font-size:.72rem;">
+    <i class="bi bi-people-fill"></i>Consumers</button>
+  <button class="bnav-item" id="dt-stock" onclick="nav('stock')" style="flex-direction:row;gap:6px;padding:10px 14px;border-radius:0;height:46px;font-size:.72rem;">
+    <i class="bi bi-boxes"></i>Stock</button>
+</nav>
+
+<!-- ── BODY WRAP (desktop: sidebar + content) ── -->
+<div class="app-body-wrap">
+
+<!-- ── DESKTOP SIDEBAR (hidden on mobile/tablet) ── -->
+<nav class="desk-sidebar" style="display:none;background:var(--card);border-right:1px solid var(--border);">
+  <div style="padding:16px 16px 8px;font-size:.6rem;font-weight:900;letter-spacing:1px;text-transform:uppercase;color:var(--muted);">Navigation</div>
+  <button class="bnav-item active" id="ds-dashboard" onclick="nav('dashboard')">
+    <i class="bi bi-grid-fill"></i>Dashboard</button>
+  <button class="bnav-item" id="ds-delivery" onclick="nav('delivery')">
+    <i class="bi bi-truck"></i>Delivery Entry</button>
+  <button class="bnav-item" id="ds-truck" onclick="nav('truck')">
+    <i class="bi bi-fuel-pump-fill"></i>Truck Refill</button>
+  <button class="bnav-item" id="ds-transfer" onclick="nav('transfer')">
+    <i class="bi bi-arrow-left-right"></i>Transfer</button>
+  <button class="bnav-item" id="ds-consumers" onclick="nav('consumers')">
+    <i class="bi bi-people-fill"></i>Consumers</button>
+  <button class="bnav-item" id="ds-stock" onclick="nav('stock')">
+    <i class="bi bi-boxes"></i>Stock Table</button>
+  <div style="padding:16px 16px 8px;margin-top:8px;font-size:.6rem;font-weight:900;letter-spacing:1px;text-transform:uppercase;color:var(--muted);border-top:1px solid var(--border);">System</div>
+  <button class="bnav-item" onclick="AuthModule.showLogout()" style="color:var(--muted);">
+    <i class="bi bi-box-arrow-right"></i>Logout</button>
+</nav>
+
+<!-- ── MAIN CONTENT ── -->
+<div class="desk-content">
 
 <!-- ═══════════════════════════════════════ PAGES ═══════ -->
 
@@ -938,15 +979,15 @@ td.ok-cell{background:#f0fff6!important;color:#0b6e3f!important;}
   <!-- Level-4: Physical Stock Count & Mismatch Detection -->
   <div class="ga-card mb-3" id="physCountCard">
     <div class="ga-card-head"><i class="bi bi-clipboard-check-fill" style="color:var(--orange)"></i> Physical Stock Count
-      <span style="font-size:.65rem;font-weight:400;color:var(--muted);margin-left:6px;">Enter actual counted cylinders to detect mismatches</span>
+      <span style="font-size:.65rem;font-weight:400;color:rgba(255,255,255,.5);margin-left:6px;">Counted vs System</span>
     </div>
     <div class="ga-card-body">
-      <!-- Header row -->
+      <!-- Header row rendered by renderPhysForm -->
       <div class="phys-grid" id="physCountGrid">
         <div class="phys-row">
-          <div class="phys-cell">Cylinder Type</div>
-          <div class="phys-cell" style="text-align:center">Godown<br>Refill</div>
-          <div class="phys-cell" style="text-align:center">Store<br>Refill</div>
+          <div class="phys-cell">Cylinder</div>
+          <div class="phys-cell" style="text-align:center">🏭 Godown</div>
+          <div class="phys-cell" style="text-align:center">🏪 Store</div>
         </div>
         <!-- Rows injected by ReconciliationModule.renderPhysForm() -->
       </div>
@@ -1070,75 +1111,9 @@ td.ok-cell{background:#f0fff6!important;color:#0b6e3f!important;}
 </div>
 
 <!-- ═════════════ GOOGLE DRIVE SETUP MODAL (Level-3 Feature 5) ═════════════ -->
-<div id="gdModal" class="gd-modal" onclick="if(event.target===this)DriveSync.closeSetup()">
-  <div class="gd-box">
-    <div class="gd-head">
-      <div class="gd-title"><i class="bi bi-cloud-arrow-up-fill"></i> Google Drive Sync Setup</div>
-      <button style="background:none;border:none;color:var(--muted);font-size:1.5rem;cursor:pointer" onclick="DriveSync.closeSetup()">&#215;</button>
-    </div>
-    <div class="gd-body">
-      <p style="font-size:.78rem;color:var(--muted);margin-bottom:18px;">Connect to Google Sheets to auto-sync all deliveries, stock and consumer data in real-time.</p>
-      
-      <div class="gd-step">
-        <div class="gd-step-num">1</div>
-        <div class="gd-step-content">
-          <div class="gd-step-title">Create a Google Sheet</div>
-          <div class="gd-step-desc">Open Google Sheets → Create new spreadsheet → Name it "GasTrack Data". Add 3 sheets: <b>Deliveries</b>, <b>Stock</b>, <b>Consumers</b>.</div>
-        </div>
-      </div>
 
-      <div class="gd-step">
-        <div class="gd-step-num">2</div>
-        <div class="gd-step-content">
-          <div class="gd-step-title">Deploy Google Apps Script</div>
-          <div class="gd-step-desc">In your Sheet → Extensions → Apps Script → paste this code:</div>
-          <div class="gd-code" style="max-height:130px;overflow-y:auto;">function doPost(e){
-  try{
-    var d=JSON.parse(e.postData.contents);
-    var ss=SpreadsheetApp.getActiveSpreadsheet();
-    var sh=ss.getSheetByName(d.sheet)||ss.insertSheet(d.sheet);
-    if(d.action==='append') sh.appendRow(d.row);
-    if(d.action==='clear'){
-      sh.clearContents();
-      d.rows.forEach(r=>sh.appendRow(r));
-    }
-    return ContentService
-      .createTextOutput(JSON.stringify({ok:true}))
-      .setMimeType(ContentService.MimeType.JSON);
-  }catch(err){
-    return ContentService
-      .createTextOutput(JSON.stringify({ok:false,error:err.message}))
-      .setMimeType(ContentService.MimeType.JSON);
-  }
-}
-function doGet(e){
-  return ContentService.createTextOutput(JSON.stringify({ok:true,status:"GasTrack connected"}))
-    .setMimeType(ContentService.MimeType.JSON);
-}</div>
-          <div class="gd-step-desc" style="margin-top:6px">Deploy as <b>Web App</b> → Execute as <b>Me</b> → Anyone can access.</div>
-        </div>
-      </div>
-
-      <div class="gd-step">
-        <div class="gd-step-num">3</div>
-        <div class="gd-step-content">
-          <div class="gd-step-title">Paste your Web App URL</div>
-          <div class="gd-step-desc">Copy the deployment URL and paste below:</div>
-          <input type="url" id="gdUrlInput" class="gd-url-input" placeholder="https://script.google.com/macros/s/..."/>
-          <div style="display:flex;gap:8px;margin-top:8px">
-            <button class="gd-test-btn" onclick="DriveSync.testConnection()">🔗 Test Connection</button>
-            <button class="gd-test-btn" style="background:var(--orange)" onclick="DriveSync.saveUrl()">💾 Save & Activate</button>
-          </div>
-          <div id="gdStatusLine" class="gd-status-line"></div>
-        </div>
-      </div>
-
-      <div style="background:#f4f8ff;border-radius:10px;padding:12px 14px;font-size:.73rem;color:var(--muted);">
-        <b style="color:var(--navy)">📋 Data that syncs:</b> Every delivery, truck refill, transfer, and new consumer added will automatically sync to your Google Sheet.
-      </div>
-    </div>
-  </div>
-</div>
+</div><!-- /desk-content -->
+</div><!-- /app-body-wrap -->
 
 <!-- BOTTOM NAV -->
 <nav class="bottom-nav">
@@ -1295,8 +1270,11 @@ const nav = (page) => {
   document.querySelectorAll('.page').forEach(p=>p.classList.remove('active'));
   document.querySelectorAll('.bnav-item').forEach(b=>b.classList.remove('active'));
   document.getElementById(`pg-${page}`).classList.add('active');
-  const btn = document.getElementById(`bn-${page}`);
-  if(btn) btn.classList.add('active');
+  // Highlight all nav buttons (mobile bottom-nav, tablet tabs, desktop sidebar)
+  ['bn','dt','ds'].forEach(prefix => {
+    const btn = document.getElementById(`${prefix}-${page}`);
+    if(btn) btn.classList.add('active');
+  });
   currentPage = page;
   window.scrollTo(0,0);
   refresh();
@@ -2726,9 +2704,9 @@ const ReconciliationModule = (() => {
       const row  = document.createElement('div');
       row.className = 'phys-row';
       row.innerHTML =
-        `<div class="phys-cell" style="font-size:.78rem;font-weight:600;color:var(--navy)">${c.label}</div>` +
-        `<div class="phys-cell"><input type="number" min="0" id="phys-god-${c.id}" placeholder="—" value="${gVal}"/></div>` +
-        `<div class="phys-cell"><input type="number" min="0" id="phys-sto-${c.id}" placeholder="—" value="${sVal}"/></div>`;
+        `<div class="phys-cell phys-cell-lbl"><i class="bi bi-cylinder"></i>${c.label}</div>` +
+        `<div class="phys-cell"><input type="number" min="0" inputmode="numeric" id="phys-god-${c.id}" placeholder="0" value="${gVal}"/></div>` +
+        `<div class="phys-cell"><input type="number" min="0" inputmode="numeric" id="phys-sto-${c.id}" placeholder="0" value="${sVal}"/></div>`;
       grid.appendChild(row);
     });
   };
@@ -3196,7 +3174,8 @@ const VirtualList = (() => {
       return;
     }
 
-    _container.style.height = 'calc(100vh - 290px)';
+    const isDesktop = window.innerWidth >= 960;
+  _container.style.height = isDesktop ? 'calc(100vh - 180px)' : 'calc(100vh - 290px)';
 
     const scrollTop  = _container.scrollTop;
     const viewH      = _container.clientHeight || 400;
