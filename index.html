@@ -51,7 +51,7 @@ body{font-family:'Barlow',sans-serif;background:var(--bg);color:var(--text);padd
 
 /* CARD */
 .ga-card{background:var(--card);border-radius:16px;border:1px solid var(--border);overflow:hidden;margin-bottom:14px;box-shadow:0 2px 12px rgba(0,0,0,.06);}
-.ga-card-head{background:var(--navy);color:#fff;padding:10px 14px;font-family:'Barlow Condensed',sans-serif;font-size:1rem;font-weight:800;letter-spacing:.5px;display:flex;align-items:center;gap:8px;}
+.ga-card-head{background:var(--navy);color:#fff;padding:10px 14px;font-family:'Barlow Condensed',sans-serif;font-size:1rem;font-weight:800;letter-spacing:.5px;display:flex;align-items:center;gap:8px;flex-wrap:wrap;word-break:break-word;overflow:hidden;max-width:100%;}
 .ga-card-head i{color:var(--orange);}
 .ga-card-body{padding:14px;}
 
@@ -62,7 +62,9 @@ body{font-family:'Barlow',sans-serif;background:var(--bg);color:var(--text);padd
 .stat-card.n{background:linear-gradient(135deg,#0d1b2a,#1a2e45);color:#fff;box-shadow:0 4px 16px rgba(13,27,42,.25);}
 .stat-card.g{background:linear-gradient(135deg,#00c97b,#00a563);color:#fff;box-shadow:0 4px 16px rgba(0,201,123,.3);}
 .stat-card.a{background:linear-gradient(135deg,#ffab00,#e89600);color:#fff;box-shadow:0 4px 16px rgba(255,171,0,.3);}
-@media(max-width:360px){.stat-grid{grid-template-columns:1fr;}.stat-val{font-size:1.9rem;}}
+@media(max-width:360px){.stat-grid{grid-template-columns:1fr 1fr;}.stat-val{font-size:1.7rem;}}
+.ga-card,.ga-card-head,.ga-card-body{max-width:100%;overflow-x:hidden;word-break:break-word;}
+*{box-sizing:border-box;}
 .stat-lbl{font-size:.65rem;font-weight:700;letter-spacing:.8px;text-transform:uppercase;opacity:.8;}
 .stat-val{font-family:'Barlow Condensed',sans-serif;font-size:2.3rem;font-weight:900;line-height:1;margin:2px 0;}
 .stat-sub{font-size:.7rem;opacity:.75;}
@@ -140,7 +142,7 @@ body{font-family:'Barlow',sans-serif;background:var(--bg);color:var(--text);padd
 @media(min-width:600px){
   body{padding-bottom:0;}
   .page{padding:20px;max-width:860px;margin:0 auto;}
-  .stat-grid{grid-template-columns:repeat(4,1fr);}
+  .stat-grid{grid-template-columns:repeat(3,1fr);}
   .bottom-nav{display:none!important;}
   .app-header{padding:0 24px;}
   .logo-text{font-size:1.45rem;}
@@ -420,6 +422,22 @@ td.ok-cell{background:#f0fff6!important;color:#0b6e3f!important;}
 
 /* Physical Count form */
 /* Physical Stock Count — Table-based for guaranteed alignment */
+.trk-refill-table{width:100%;border-collapse:separate;border-spacing:0 5px;margin-bottom:6px;}
+.trk-refill-table thead th{background:var(--navy);color:#fff;font-size:.6rem;font-weight:800;letter-spacing:.7px;text-transform:uppercase;padding:9px 10px;}
+.trk-refill-table thead th:first-child{border-radius:8px 0 0 8px;text-align:left;}
+.trk-refill-table thead th:last-child{border-radius:0 8px 8px 0;}
+.trk-refill-table thead th:not(:first-child){text-align:center;width:30%;}
+.trk-refill-table tbody tr td{background:#fff;border-top:1px solid var(--border);border-bottom:1px solid var(--border);padding:6px 8px;vertical-align:middle;}
+.trk-refill-table tbody tr td:first-child{border-left:1px solid var(--border);border-radius:8px 0 0 8px;font-size:.78rem;font-weight:700;color:var(--navy);white-space:nowrap;}
+.trk-refill-table tbody tr td:last-child{border-right:1px solid var(--border);border-radius:0 8px 8px 0;}
+.trk-refill-input{width:100%;border:1.5px solid var(--border);border-radius:7px;padding:6px 4px;font-size:.88rem;font-weight:800;text-align:center;font-family:'Barlow Condensed',sans-serif;color:var(--navy);background:#f4f7fc;transition:all .15s;}
+.trk-refill-input:focus{outline:none;border-color:var(--orange);background:#fff;box-shadow:0 0 0 3px rgba(255,107,0,.1);}
+.trk-rcv{background:#f0fff8 !important;}
+.trk-rcv .trk-refill-input{background:#d4f7e7;border-color:#00c97b;}
+.trk-rcv .trk-refill-input:focus{border-color:#00a563;box-shadow:0 0 0 3px rgba(0,201,123,.12);}
+.trk-ret{background:#fff4f0 !important;}
+.trk-ret .trk-refill-input{background:#ffe8e0;border-color:#ff8a50;}
+.trk-ret .trk-refill-input:focus{border-color:var(--orange);box-shadow:0 0 0 3px rgba(255,107,0,.12);}
 .phys-table{width:100%;border-collapse:separate;border-spacing:0 6px;margin-bottom:14px;}
 .phys-table thead tr th{
   background:var(--navy);color:#fff;
@@ -643,11 +661,8 @@ td.ok-cell{background:#f0fff6!important;color:#0b6e3f!important;}
       <div class="stat-val" id="ds-delCount">0</div>
       <div class="stat-sub" id="ds-delCyl">0 cylinders</div>
     </div>
-    <div class="stat-card n">
-      <div class="stat-lbl">Consumers</div>
-      <div class="stat-val" id="ds-totalCons">0</div>
-      <div class="stat-sub">Registered</div>
-    </div>
+    <!-- Consumers card moved to Consumers page -->
+    <div id="ds-totalCons" style="display:none">0</div>
     <div class="stat-card g">
       <div class="stat-lbl">Godown Refill</div>
       <div class="stat-val" id="ds-godRef">0</div>
@@ -808,28 +823,42 @@ td.ok-cell{background:#f0fff6!important;color:#0b6e3f!important;}
   <div class="ga-card mb-3">
     <div class="ga-card-head"><i class="bi bi-plus-circle-fill"></i> Add Truck Refill</div>
     <div class="ga-card-body">
-      <form class="ga-form" onsubmit="submitTruckRefill(event)">
+      <form class="ga-form" id="trkRefillForm" onsubmit="submitTruckRefill(event)">
+        <!-- Category-wise Received / Returned table -->
         <div class="mb-3">
-          <label class="form-label">Cylinder Type *</label>
-          <select id="trk-cyl" class="form-select" required>
-            <option value="">— Select —</option>
-          </select>
+          <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px;">
+            <span class="form-label" style="margin:0">Cylinders Received &amp; Returned *</span>
+            <span style="font-size:.65rem;color:var(--muted);">Fill only applicable rows</span>
+          </div>
+          <table class="trk-refill-table">
+            <thead>
+              <tr>
+                <th>Cylinder Type</th>
+                <th style="color:#00c97b;">↓ Received</th>
+                <th style="color:#ff8a50;">↑ Empty Out</th>
+              </tr>
+            </thead>
+            <tbody id="trkRefillBody"></tbody>
+          </table>
+          <div style="display:flex;gap:16px;padding:4px 2px;font-size:.68rem;color:var(--muted);">
+            <span style="display:flex;align-items:center;gap:4px;"><span style="width:10px;height:10px;background:#d4f7e7;border-radius:3px;display:inline-block;"></span>Green = Refill received from company</span>
+            <span style="display:flex;align-items:center;gap:4px;"><span style="width:10px;height:10px;background:#ffe8e0;border-radius:3px;display:inline-block;"></span>Orange = Empty returned to company</span>
+          </div>
         </div>
         <div class="row g-2 mb-3">
           <div class="col-6">
-            <label class="form-label">Quantity *</label>
-            <input type="number" id="trk-qty" class="form-control" value="" min="1" placeholder="No. of cylinders" required/>
+            <label class="form-label">Truck No.</label>
+            <input type="text" id="trk-no" class="form-control" placeholder="e.g. OD02AB1234"
+                   oninput="this.value=this.value.toUpperCase()"/>
           </div>
           <div class="col-6">
-            <label class="form-label">Truck No.</label>
-            <input type="text" id="trk-no" class="form-control" placeholder="e.g. TN01AB1234"/>
+            <label class="form-label">Date</label>
+            <input type="date" id="trk-date" class="form-control"/>
           </div>
         </div>
-        <div class="mb-3">
-          <label class="form-label">Date</label>
-          <input type="date" id="trk-date" class="form-control"/>
-        </div>
-        <button type="submit" class="btn-main"><i class="bi bi-fuel-pump-fill"></i> Add to Godown</button>
+        <button type="submit" class="btn-main">
+          <i class="bi bi-fuel-pump-fill"></i> Update Godown Stock
+        </button>
       </form>
     </div>
   </div>
@@ -1051,9 +1080,20 @@ td.ok-cell{background:#f0fff6!important;color:#0b6e3f!important;}
 
 <!-- CONSUMERS PAGE -->
 <div id="pg-consumers" class="page">
-  <div class="page-head">
-    <div class="ph-title"><i class="bi bi-people-fill" style="color:var(--orange)"></i> Consumers</div>
-    <div class="ph-sub" id="consSub">Loading...</div>
+  <div class="page-head" style="display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:8px;padding:12px 16px;">
+    <div>
+      <div class="ph-title"><i class="bi bi-people-fill" style="color:var(--orange)"></i> Consumers</div>
+      <div class="ph-sub" id="consSub">Loading...</div>
+    </div>
+    <div style="display:flex;align-items:center;gap:10px;flex-shrink:0;">
+      <div style="background:rgba(255,255,255,.1);border-radius:10px;padding:6px 12px;text-align:center;">
+        <div style="font-family:'Barlow Condensed',sans-serif;font-size:1.4rem;font-weight:900;color:#fff;line-height:1;" id="consPageTotal">—</div>
+        <div style="font-size:.58rem;color:rgba(255,255,255,.6);font-weight:700;letter-spacing:.5px;text-transform:uppercase;">Total</div>
+      </div>
+      <button onclick="ConsumerModal.open()" style="background:var(--orange);color:#fff;border:none;border-radius:10px;padding:8px 14px;font-size:.78rem;font-weight:800;font-family:'Barlow Condensed',sans-serif;letter-spacing:.3px;cursor:pointer;display:flex;align-items:center;gap:6px;white-space:nowrap;">
+        <i class="bi bi-person-plus-fill"></i> Add Consumer
+      </button>
+    </div>
   </div>
 
   <!-- Search + Filter -->
@@ -1093,8 +1133,11 @@ td.ok-cell{background:#f0fff6!important;color:#0b6e3f!important;}
         <div class="row g-2 mb-3">
           <div class="col-6">
             <label class="form-label">Consumer No. *</label>
-            <input type="text" id="nc-no" class="form-control" placeholder="e.g. 1234567890"
-                   required maxlength="20" autocomplete="off"/>
+            <input type="text" id="nc-no" class="form-control" placeholder="9-digit number"
+                   required maxlength="9" minlength="9" inputmode="numeric" autocomplete="off"
+                   pattern="[0-9]{9}" title="Consumer number must be exactly 9 digits"
+                   oninput="this.value=this.value.replace(/[^0-9]/g,'').slice(0,9)"/>
+            <div id="nc-no-err" style="font-size:.68rem;color:var(--red);margin-top:3px;display:none;">⚠ Consumer No. must be exactly 9 digits</div>
           </div>
           <div class="col-6">
             <label class="form-label">Type *</label>
@@ -1119,7 +1162,8 @@ td.ok-cell{background:#f0fff6!important;color:#0b6e3f!important;}
           <div class="col-6">
             <label class="form-label">City / Area</label>
             <input type="text" id="nc-city" class="form-control"
-                   placeholder="Town / Village" maxlength="60"/>
+                   placeholder="Town / Village" maxlength="60"
+                   oninput="this.value=this.value.toUpperCase()"/>
           </div>
         </div>
         <div class="mb-3">
@@ -1306,6 +1350,8 @@ const nav = (page) => {
     if(btn) btn.classList.add('active');
   });
   currentPage = page;
+  if (page === 'truck') renderTrkRefillForm();
+  if (page === 'consumers') renderConsumersPage();
   window.scrollTo(0,0);
   refresh();
 };
@@ -1436,6 +1482,7 @@ const renderDeliveryPage = () => {
 
 // ─── TRUCK REFILL PAGE ────────────────────────────────────────────
 const renderTruckPage = () => {
+  renderTrkRefillForm(); // init category-wise input table
   let rows = '';
   CYLINDER_TYPES.forEach(c=>{
     const g = stock[c.id]?.godown||{refill:0};
@@ -1551,26 +1598,80 @@ const submitDelivery = (e) => {
   refresh();
 };
 
+// ─── Build truck refill input rows ───────────────────────────────
+const renderTrkRefillForm = () => {
+  const tbody = document.getElementById('trkRefillBody');
+  if (!tbody || tbody.children.length > 0) return; // already rendered
+  CYLINDER_TYPES.forEach(c => {
+    const tr = document.createElement('tr');
+    tr.innerHTML =
+      `<td>${c.label}</td>` +
+      `<td class="trk-rcv"><input class="trk-refill-input" type="number" min="0" inputmode="numeric"
+        id="trk-rcv-${c.id}" placeholder="0"
+        oninput="document.getElementById('trk-ret-${c.id}').value=this.value||''"/></td>` +
+      `<td class="trk-ret"><input class="trk-refill-input" type="number" min="0" inputmode="numeric"
+        id="trk-ret-${c.id}" placeholder="0"/></td>`;
+    tbody.appendChild(tr);
+  });
+};
+
 const submitTruckRefill = (e) => {
   e.preventDefault();
-  const cylType = document.getElementById('trk-cyl').value;
-  const qty     = parseInt(document.getElementById('trk-qty').value);
   const truckNo = document.getElementById('trk-no').value.trim();
   const date    = document.getElementById('trk-date').value || today();
 
-  if(!cylType || !qty || qty<1){ toast('Please fill all fields.','error'); return; }
+  let totalRcv = 0, totalRet = 0;
+  const entries = [];
 
-  stock[cylType].godown.refill += qty;
-  const trkRecord = {cylType, qty, truckNo, date, ts: new Date().toISOString(), agencyId: _saas.agencyId};
+  CYLINDER_TYPES.forEach(c => {
+    const rcvEl = document.getElementById('trk-rcv-' + c.id);
+    const retEl = document.getElementById('trk-ret-' + c.id);
+    const rcv   = rcvEl && rcvEl.value !== '' ? parseInt(rcvEl.value) : 0;
+    const ret   = retEl && retEl.value !== '' ? parseInt(retEl.value) : 0;
+    if (rcv > 0 || ret > 0) {
+      entries.push({ cylType: c.id, received: rcv, returned: ret });
+      totalRcv += rcv;
+      totalRet += ret;
+    }
+  });
+
+  if (entries.length === 0) {
+    toast('Enter at least one cylinder count.', 'error'); return;
+  }
+
+  // Apply stock changes per cylinder type
+  entries.forEach(entry => {
+    if (!stock[entry.cylType]) return;
+    stock[entry.cylType].godown.refill += entry.received;        // +Refill received
+    stock[entry.cylType].godown.empty  = Math.max(0,
+      (stock[entry.cylType].godown.empty || 0) - entry.returned); // -Empty returned
+  });
+
+  // One consolidated record per refill event
+  const trkRecord = {
+    entries, truckNo, date,
+    totalReceived: totalRcv, totalReturned: totalRet,
+    ts: new Date().toISOString(), agencyId: _saas.agencyId
+  };
+  // Legacy compat: also store cylType+qty for old log rendering
+  trkRecord.cylType = entries[0]?.cylType || '';
+  trkRecord.qty     = totalRcv;
+
   truckRefills.push(trkRecord);
   save();
   DriveSync.pushTruckRefill(trkRecord);
 
-  document.getElementById('trk-cyl').value = '';
-  document.getElementById('trk-qty').value = '';
-  document.getElementById('trk-no').value  = '';
+  // Reset inputs
+  CYLINDER_TYPES.forEach(c => {
+    const rcvEl = document.getElementById('trk-rcv-' + c.id);
+    const retEl = document.getElementById('trk-ret-' + c.id);
+    if (rcvEl) rcvEl.value = '';
+    if (retEl) retEl.value = '';
+  });
+  document.getElementById('trk-no').value   = '';
+  document.getElementById('trk-date').value  = '';
 
-  toast(`${qty} × ${cylLabel(cylType)} added to Godown!`);
+  toast(`Truck refill saved — ${totalRcv} received, ${totalRet} empties returned.`);
   refresh();
 };
 
@@ -1726,6 +1827,7 @@ const renderConsPage = () => {
   const slice = _filteredCons.slice(0, (_consPage+1)*CONS_PER_PAGE);
   const total = _filteredCons.length;
   document.getElementById('consSub').textContent = `${total} consumers`;
+  const cpt = document.getElementById('consPageTotal'); if(cpt) cpt.textContent = total.toLocaleString();
   if(total===0){
     document.getElementById('consList').innerHTML =
       '<div class="empty-st"><i class="bi bi-people"></i><p>No consumers found</p></div>';
@@ -1761,6 +1863,7 @@ const renderConsumersPage = () => {
   if (typeof VirtualList !== 'undefined') VirtualList.mount('consVirtList');
   filterConsumers();
 };
+
 
 // ─── DELIVERY DATE HELPER ────────────────────────────────────────
 const DeliveryDateHelper = {
@@ -1894,18 +1997,25 @@ const ConsumerModule = (() => {
   // ── Public: handle "Add New Consumer" form submit ────────────────
   const submitForm = (e) => {
     e.preventDefault();
+    const noVal = document.getElementById('nc-no').value.replace(/[^0-9]/g, '');
+    const noErr = document.getElementById('nc-no-err');
+    if (noVal.length !== 9) {
+      if (noErr) noErr.style.display = 'block';
+      toast('Consumer No. must be exactly 9 digits.', 'error');
+      return;
+    }
+    if (noErr) noErr.style.display = 'none';
     const result = add({
-      no:      document.getElementById('nc-no').value,
-      name:    document.getElementById('nc-name').value,
+      no:      noVal,
+      name:    document.getElementById('nc-name').value.toUpperCase(),
       mobile:  document.getElementById('nc-mobile').value,
-      address: document.getElementById('nc-addr').value,
-      city:    document.getElementById('nc-city').value,
+      address: document.getElementById('nc-addr').value.toUpperCase(),
+      city:    document.getElementById('nc-city').value.toUpperCase(),
       type:    document.getElementById('nc-type').value,
     });
     if (!result.ok) { toast(result.msg, 'error'); return; }
     toast('Consumer saved: ' + result.consumer.n);
     ConsumerModal.close();
-    // Auto-select the newly added consumer in the delivery form
     selectConsumer(result.consumer.no);
   };
 
@@ -2201,16 +2311,20 @@ const CylinderRules = (() => {
     const hint  = _hint();
     if (!sel) return;
 
-    const isDomestic = (c.tp === 'domestic') || (!c.tp && c.sc === 'PMUY');
+    // All consumers in this system are domestic.
+    // Commercial consumers (c.tp==='commercial') get type choice;
+    // everyone else (PMUY, domestic, unknown) is locked to 14.2 kg.
+    const isCommercial = (c.tp === 'commercial');
 
-    if (isDomestic) {
-      // ── Domestic: lock to 14.2 kg only ──────────────────────
+    if (!isCommercial) {
+      // ── Domestic / PMUY / default: lock to 14.2 kg ──────────
       _populate([DOMESTIC_ID]);
       sel.value    = DOMESTIC_ID;
       sel.disabled = true;
       if (hint) {
-        hint.className  = 'locked';
-        hint.innerHTML  = '<span style="font-size:1rem">🔒</span><span>Locked to <b>14.2 kg Domestic</b> (PMUY/Domestic connection)</span>';
+        hint.className = 'locked';
+        hint.innerHTML = '<span style="font-size:1rem">🔒</span>'
+          + '<span>Auto-locked to <b>14.2 kg Domestic</b></span>';
       }
     } else {
       // ── Commercial: show only commercial options ─────────────
@@ -2218,8 +2332,9 @@ const CylinderRules = (() => {
       sel.value    = '';
       sel.disabled = false;
       if (hint) {
-        hint.className  = 'choices';
-        hint.innerHTML  = '<span style="font-size:1rem">🏢</span><span>Commercial consumer — choose cylinder type above</span>';
+        hint.className = 'choices';
+        hint.innerHTML = '<span style="font-size:1rem">🏢</span>'
+          + '<span>Commercial consumer — choose cylinder type above</span>';
       }
     }
   };
