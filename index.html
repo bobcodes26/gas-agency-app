@@ -8,6 +8,7 @@
 <link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@500;700;800;900&family=Barlow:wght@400;500;600;700&display=swap" rel="stylesheet"/>
 <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet"/>
 <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css" rel="stylesheet"/>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/crypto-js/4.2.0/crypto-js.min.js"></script>
 <style>
 :root{
   --navy:#0d1b2a;--navy2:#1a2e45;--navy3:#243b55;
@@ -288,7 +289,7 @@ body{font-family:'Barlow',sans-serif;background:var(--bg);color:var(--text);padd
 .type-com{background:#fff3e0;color:#b06000;border-radius:20px;padding:2px 9px;font-size:.6rem;font-weight:900;white-space:nowrap;letter-spacing:.3px;}
 .cons-new-badge{background:var(--orange);color:#fff;border-radius:20px;padding:2px 7px;font-size:.58rem;font-weight:900;white-space:nowrap;letter-spacing:.3px;}
 
-/* ── SEARCH ENGINE ──────────────────────────────────────────── */
+/* ── SEARCH ENGINE v2 ───────────────────────────────────────── */
 .ac-input-wrap{position:relative;display:flex;align-items:center;}
 .ac-input-wrap .ac-input{padding-right:38px;}
 .ac-clear-btn{position:absolute;right:10px;top:50%;transform:translateY(-50%);background:none;border:none;color:var(--muted);font-size:1.15rem;line-height:1;cursor:pointer;padding:2px 5px;border-radius:4px;display:none;transition:color .15s;}
@@ -448,7 +449,11 @@ td.ok-cell{background:#f0fff6!important;color:#0b6e3f!important;}
 /* RED = empty returned */
 .trk-input.ret-input{background:#fdeaea;border:1px solid #dc3545;color:#721c24;}
 .trk-input.ret-input:focus{border-color:#c82333;box-shadow:0 0 0 3px rgba(220,53,69,.15);}
-
+@media(max-width:400px){
+  .trk-header,.trk-row{grid-template-columns:1.4fr 1fr 1fr;gap:8px;}
+  .trk-cyl-name{font-size:.74rem;}
+  .trk-input{height:42px;font-size:14px;padding:8px;}
+}
 /* ── Truck History Table ──────────────────────────────── */
 .trk-hist-wrap{overflow-x:auto;-webkit-overflow-scrolling:touch;border-radius:10px;}
 .trk-hist-table{width:100%;border-collapse:collapse;font-size:.72rem;min-width:560px;}
@@ -491,10 +496,9 @@ td.ok-cell{background:#f0fff6!important;color:#0b6e3f!important;}
 .stock-input::placeholder,.phys-input::placeholder{
   color:var(--muted);font-weight:400;font-size:.85rem;}
 @media(max-width:400px){
-  .trk-header,.trk-row,
   .phys-hdr,.stock-row{grid-template-columns:1.4fr 1fr 1fr;gap:8px;}
-  .trk-cyl-name,.phys-cyl-name{font-size:.74rem;}
-  .trk-input,.stock-input,.phys-input{height:42px;font-size:14px;padding:8px;}
+  .phys-cyl-name{font-size:.74rem;}
+  .stock-input,.phys-input{height:42px;font-size:14px;padding:8px;}
 }
 
 /* Mismatch result rows */
@@ -524,7 +528,7 @@ td.ok-cell{background:#f0fff6!important;color:#0b6e3f!important;}
 .at-badge.amber{background:#fff3e0;color:#b06000;}
 
 /* ══════════════════════════════════════════════════════
-   GASTRACK — Agency Identity, Auth & Role CSS
+   GASTRACK SAAS v8 — Multi-Agency + Performance CSS
 ══════════════════════════════════════════════════════ */
 
 /* Agency badge in header */
@@ -536,6 +540,17 @@ td.ok-cell{background:#f0fff6!important;color:#0b6e3f!important;}
 .role-badge{display:inline-block;font-size:.55rem;border-radius:4px;padding:1px 5px;font-weight:800;text-transform:uppercase;letter-spacing:.3px;margin-left:3px;}
 .role-owner{background:#fff3e0;color:#b06000;}
 .role-manager{background:#e4f0ff;color:#1352a0;}
+
+/* Firebase sync dot */
+
+/* Agency Setup Modal */
+
+
+
+
+
+
+
 
 /* Virtual List for Consumers (50k support) */
 #consVirtList{overflow-y:auto;-webkit-overflow-scrolling:touch;position:relative;scroll-behavior:smooth;}
@@ -550,6 +565,142 @@ td.ok-cell{background:#f0fff6!important;color:#0b6e3f!important;}
 .settings-btn{background:rgba(255,255,255,.08);border:none;border-radius:7px;color:rgba(255,255,255,.6);padding:5px 9px;cursor:pointer;font-size:.9rem;}
 .settings-btn:hover{background:rgba(255,255,255,.15);color:#fff;}
 
+
+/* ═══════════════════════════════════════════════════════
+   SECURITY MODULE — PIN Lock Screen
+═══════════════════════════════════════════════════════ */
+#pinOverlay{
+  position:fixed;inset:0;z-index:99999;
+  background:var(--navy);
+  display:flex;flex-direction:column;
+  align-items:center;justify-content:center;
+  padding:24px;
+  transition:opacity .25s;
+}
+#pinOverlay.pin-hidden{
+  opacity:0;pointer-events:none;
+}
+.pin-logo{
+  width:60px;height:60px;border-radius:16px;
+  background:var(--orange);
+  display:flex;align-items:center;justify-content:center;
+  font-size:1.8rem;color:#fff;
+  box-shadow:0 8px 24px rgba(255,107,0,.45);
+  margin-bottom:14px;
+}
+.pin-title{
+  font-family:'Barlow Condensed',sans-serif;
+  font-size:1.9rem;font-weight:900;color:#fff;
+  letter-spacing:.5px;margin-bottom:4px;
+}
+.pin-sub{
+  font-size:.78rem;color:var(--muted);
+  margin-bottom:28px;text-align:center;
+}
+.pin-dots{
+  display:flex;gap:14px;margin-bottom:24px;
+}
+.pin-dot{
+  width:16px;height:16px;border-radius:50%;
+  border:2px solid rgba(255,255,255,.3);
+  background:transparent;
+  transition:background .15s,border-color .15s,transform .12s;
+}
+.pin-dot.filled{
+  background:#fff;border-color:#fff;
+  transform:scale(1.15);
+}
+.pin-dot.error{
+  background:var(--red);border-color:var(--red);
+  animation:pin-shake .4s ease;
+}
+.pin-dot.success{
+  background:var(--green);border-color:var(--green);
+}
+@keyframes pin-shake{
+  0%,100%{transform:translateX(0);}
+  20%{transform:translateX(-6px);}
+  40%{transform:translateX(6px);}
+  60%{transform:translateX(-4px);}
+  80%{transform:translateX(4px);}
+}
+.pin-pad{
+  display:grid;grid-template-columns:repeat(3,1fr);
+  gap:10px;width:220px;
+}
+.pin-btn{
+  height:58px;border-radius:12px;
+  border:none;
+  background:rgba(255,255,255,.08);
+  color:#fff;
+  font-family:'Barlow Condensed',sans-serif;
+  font-size:1.5rem;font-weight:700;
+  cursor:pointer;
+  transition:background .12s,transform .1s;
+  display:flex;flex-direction:column;align-items:center;justify-content:center;
+  line-height:1;
+  -webkit-tap-highlight-color:transparent;
+}
+.pin-btn:hover{background:rgba(255,255,255,.15);}
+.pin-btn:active{background:var(--orange);transform:scale(.94);}
+.pin-btn.pin-del{background:rgba(255,59,92,.12);color:var(--red);}
+.pin-btn.pin-del:active{background:var(--red);color:#fff;}
+.pin-btn.pin-ok{
+  grid-column:span 3;height:48px;
+  background:var(--orange);font-size:1rem;letter-spacing:.5px;
+  margin-top:4px;border-radius:12px;
+}
+.pin-btn.pin-ok:active{background:var(--orange2);}
+.pin-btn-sub{font-size:.48rem;letter-spacing:.5px;opacity:.5;text-transform:uppercase;margin-top:2px;}
+.pin-msg{
+  font-size:.75rem;color:var(--red);
+  margin-top:14px;min-height:20px;
+  font-weight:700;letter-spacing:.3px;
+  text-align:center;
+}
+.pin-setup-badge{
+  background:rgba(255,171,0,.15);border:1px solid rgba(255,171,0,.3);
+  border-radius:8px;padding:6px 12px;
+  font-size:.7rem;color:var(--amber);
+  font-weight:700;margin-bottom:20px;
+}
+.pin-forgot{
+  margin-top:16px;font-size:.68rem;
+  color:rgba(255,255,255,.3);cursor:pointer;
+  border:none;background:none;
+  transition:color .15s;
+  font-family:'Barlow',sans-serif;
+  text-decoration:underline;text-underline-offset:2px;
+}
+.pin-forgot:hover{color:var(--muted);}
+.pin-lock-badge{
+  position:fixed;bottom:80px;right:14px;z-index:9001;
+  background:var(--navy2);border:1px solid var(--navy3);
+  border-radius:10px;padding:8px 12px;
+  display:flex;align-items:center;gap:7px;
+  font-size:.7rem;font-weight:700;color:var(--muted);
+  cursor:pointer;
+  transition:background .15s;
+  box-shadow:0 2px 8px rgba(0,0,0,.15);
+}
+.pin-lock-badge:hover{background:var(--navy3);color:#fff;}
+.pin-lock-badge i{font-size:.95rem;}
+.pin-export-row{
+  display:flex;gap:8px;margin-top:16px;
+}
+.pin-export-btn{
+  background:rgba(255,255,255,.07);border:1px solid rgba(255,255,255,.15);
+  border-radius:8px;padding:8px 14px;
+  font-size:.72rem;color:rgba(255,255,255,.6);
+  cursor:pointer;display:flex;align-items:center;gap:6px;
+  font-family:'Barlow',sans-serif;font-weight:700;
+  transition:all .15s;
+}
+.pin-export-btn:hover{background:rgba(255,255,255,.12);color:#fff;}
+@media(max-width:360px){
+  .pin-pad{width:200px;gap:8px;}
+  .pin-btn{height:52px;font-size:1.3rem;}
+}
 </style>
 </head>
 <body>
@@ -559,6 +710,57 @@ td.ok-cell{background:#f0fff6!important;color:#0b6e3f!important;}
 <!-- ░░ AGENCY SETUP MODAL ░░ -->
 
 <!-- ═══════════════ LOGIN SCREEN (Level-3 Feature 4) ═══════════ -->
+<!-- ═══════════════════════════════════════════════════
+     SECURITY: PIN LOCK OVERLAY
+     Shown on load and after inactivity timeout
+═══════════════════════════════════════════════════ -->
+<div id="pinOverlay">
+  <div class="pin-logo"><i class="bi bi-shield-lock-fill"></i></div>
+  <div class="pin-title">GasTrack</div>
+  <div id="pinSubText" class="pin-sub">Enter your 6-digit PIN to continue</div>
+  <div id="pinSetupBadge" class="pin-setup-badge" style="display:none">
+    🔐 First time setup — create your PIN
+  </div>
+  <div class="pin-dots" id="pinDots">
+    <div class="pin-dot" id="pd0"></div>
+    <div class="pin-dot" id="pd1"></div>
+    <div class="pin-dot" id="pd2"></div>
+    <div class="pin-dot" id="pd3"></div>
+    <div class="pin-dot" id="pd4"></div>
+    <div class="pin-dot" id="pd5"></div>
+  </div>
+  <div class="pin-pad">
+    <button class="pin-btn" onclick="PinSecurity.press('1')">1<span class="pin-btn-sub"></span></button>
+    <button class="pin-btn" onclick="PinSecurity.press('2')">2<span class="pin-btn-sub">ABC</span></button>
+    <button class="pin-btn" onclick="PinSecurity.press('3')">3<span class="pin-btn-sub">DEF</span></button>
+    <button class="pin-btn" onclick="PinSecurity.press('4')">4<span class="pin-btn-sub">GHI</span></button>
+    <button class="pin-btn" onclick="PinSecurity.press('5')">5<span class="pin-btn-sub">JKL</span></button>
+    <button class="pin-btn" onclick="PinSecurity.press('6')">6<span class="pin-btn-sub">MNO</span></button>
+    <button class="pin-btn" onclick="PinSecurity.press('7')">7<span class="pin-btn-sub">PQRS</span></button>
+    <button class="pin-btn" onclick="PinSecurity.press('8')">8<span class="pin-btn-sub">TUV</span></button>
+    <button class="pin-btn" onclick="PinSecurity.press('9')">9<span class="pin-btn-sub">WXYZ</span></button>
+    <button class="pin-btn pin-del" onclick="PinSecurity.backspace()"><i class="bi bi-delete"></i></button>
+    <button class="pin-btn" onclick="PinSecurity.press('0')">0</button>
+    <button class="pin-btn" onclick="PinSecurity.press('0')" style="display:none"></button>
+  </div>
+  <div id="pinMsg" class="pin-msg"></div>
+  <div class="pin-export-row">
+    <button class="pin-export-btn" onclick="PinSecurity.exportEncrypted()">
+      <i class="bi bi-download"></i> Export Encrypted Backup
+    </button>
+    <button class="pin-export-btn" onclick="PinSecurity.importEncrypted()">
+      <i class="bi bi-upload"></i> Import Backup
+    </button>
+  </div>
+  <button class="pin-forgot" id="pinForgotBtn" onclick="PinSecurity.resetPin()" style="display:none">
+    Forgot PIN? Reset all data
+  </button>
+</div>
+
+<!-- Hidden file input for import -->
+<input type="file" id="pinImportFile" accept=".gtrack" style="display:none"
+  onchange="PinSecurity.processImport(this)"/>
+
 <div id="loginScreen">
   <div class="ls-logo"><i class="bi bi-fire"></i></div>
   <div class="ls-title">GasTrack</div>
@@ -1275,6 +1477,11 @@ td.ok-cell{background:#f0fff6!important;color:#0b6e3f!important;}
 </div><!-- /desk-content -->
 </div><!-- /app-body-wrap -->
 
+<!-- LOCK BADGE (visible on dashboard, click to manually lock) -->
+<button class="pin-lock-badge" id="lockBadge" onclick="PinSecurity.lock()" title="Lock dashboard">
+  <i class="bi bi-lock-fill"></i> <span id="lockTimerDisp">Auto-lock in 10:00</span>
+</button>
+
 <!-- BOTTOM NAV -->
 <nav class="bottom-nav">
   <button class="bnav-item active" id="bn-dashboard" onclick="nav('dashboard')">
@@ -1351,7 +1558,14 @@ const _saas = (() => {
 
 // ─── DATA LOAD (agency-scoped with backward-compat fallback) ─────────
 const _lsGet = (agencyKey, legacyKey) => {
-  return localStorage.getItem(agencyKey) || localStorage.getItem(legacyKey) || null;
+  const raw = localStorage.getItem(agencyKey) || localStorage.getItem(legacyKey) || null;
+  if (!raw) return null;
+  // Try decryption first; fall back to raw (handles migration from unencrypted data)
+  if (typeof SecureStore !== 'undefined' && SecureStore.ready()) {
+    const dec = SecureStore.decrypt(raw);
+    return dec !== null ? dec : raw;
+  }
+  return raw;
 };
 let stock      = JSON.parse(_lsGet(_saas.key('stock'),      'gt_stock')      || 'null') || defaultStock();
 let deliveries = JSON.parse(_lsGet(_saas.key('deliveries'), 'gt_deliveries') || '[]');
@@ -1360,21 +1574,23 @@ let transfers  = JSON.parse(_lsGet(_saas.key('transfer'),   'gt_transfer')   || 
 
 const save = () => {
   const k = _saas.key;
-  // Agency-scoped keys (primary)
-  localStorage.setItem(k('stock'),      JSON.stringify(stock));
-  localStorage.setItem(k('deliveries'), JSON.stringify(deliveries));
-  localStorage.setItem(k('truck'),      JSON.stringify(truckRefills));
-  localStorage.setItem(k('transfer'),   JSON.stringify(transfers));
-  // Legacy keys kept for 'default' agency (backward compat)
+  // Use SecureStore if available (PIN set), else plain JSON
+  const _enc = (val) => (typeof SecureStore !== 'undefined' && SecureStore.ready())
+    ? SecureStore.encrypt(JSON.stringify(val))
+    : JSON.stringify(val);
+
+  localStorage.setItem(k('stock'),      _enc(stock));
+  localStorage.setItem(k('deliveries'), _enc(deliveries));
+  localStorage.setItem(k('truck'),      _enc(truckRefills));
+  localStorage.setItem(k('transfer'),   _enc(transfers));
+  // Legacy keys (default agency backward compat)
   if (_saas.agencyId === 'default') {
-    localStorage.setItem('gt_stock',      JSON.stringify(stock));
-    localStorage.setItem('gt_deliveries', JSON.stringify(deliveries));
-    localStorage.setItem('gt_truck',      JSON.stringify(truckRefills));
-    localStorage.setItem('gt_transfer',   JSON.stringify(transfers));
+    localStorage.setItem('gt_stock',      _enc(stock));
+    localStorage.setItem('gt_deliveries', _enc(deliveries));
+    localStorage.setItem('gt_truck',      _enc(truckRefills));
+    localStorage.setItem('gt_transfer',   _enc(transfers));
   }
-  // ── Level-4: snapshot opening stock once per day ─────────────
   StockSnapshot.updateIfNewDay();
-  // ── Level-5: async Firebase sync (non-blocking) ───────────────
   if (typeof FirebaseService !== 'undefined') FirebaseService.queueSync();
 };
 
@@ -1979,7 +2195,7 @@ const acSearch = (q) => {
   dd.innerHTML = results.map(c => `
     <div class="ac-item" onclick="selectConsumer('${c.no}')">
       <div class="ac-n">${c.n}</div>
-      <div class="ac-m">${c.m ? '📱 '+c.m+' · ' : ''}#${c.no} · <span class="${c.sc==='PMUY'?'sc-pmuy':'sc-non'}">${c.sc}</span>${c._custom?' <span class="cons-new-badge">NEW</span>':''}${c.tp?' · '+(c.tp==='domestic'?'&#127968; Dom':'&#127970; Com'):''}</div>
+      <div class="ac-m">${c.m ? '📱 '+c.m+' · ' : ''}#${c.no} · <span class="${c.sc==='PMUY'?'sc-pmuy':'sc-non'}">${c.sc}</span>${c._custom?' <span class="cons-new-badge">NEW</span>':''}${c.tp?' · '+(c.tp==='domestic'?'🏠 Dom':'🏢 Com'):''}</div>
     </div>`).join('');
   dd.style.display='block';
 };
@@ -2303,7 +2519,7 @@ const SearchEngine = (() => {
 
   // ── Utility: HTML-escape ──────────────────────────────────────
   const _esc = (s) =>
-    String(s || '').replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
+    String(s || '').replace(/&/g, '&').replace(/</g, '<').replace(/>/g, '>');
 
   // ── Utility: wrap matched text in highlight span ──────────────
   const _hl = (text, q) => {
@@ -2382,13 +2598,13 @@ const SearchEngine = (() => {
       // Secondary line: mobile · city · PMUY badge · type badge
       const mobPart = c.m
         ? (mobMatch
-            ? '📱&thinsp;<span class="ac-hl">' + _esc(c.m) + '</span>'
-            : '📱&thinsp;' + _esc(c.m))
+            ? '📱 <span class="ac-hl">' + _esc(c.m) + '</span>'
+            : '📱 ' + _esc(c.m))
         : '';
       const cityPart = c.ct ? _esc(c.ct) : '';
 
-      const secondary = [mobPart, cityPart].filter(Boolean).join(' &middot; ')
-        + (mobPart || cityPart ? ' &middot; ' : '')
+      const secondary = [mobPart, cityPart].filter(Boolean).join(' · ')
+        + (mobPart || cityPart ? ' · ' : '')
         + _scTag(c) + ' ' + _typeTag(c) + _newTag(c);
 
       return '<div class="ac-item" data-idx="' + i + '"'
@@ -2503,7 +2719,7 @@ const SearchEngine = (() => {
   const init = () => {
     // Nothing extra needed — the existing outside-click handler on
     // .ac-wrap already closes the dropdown correctly.
-    /* Consumers loaded — indexes built */
+    /* SearchEngine v2 ready — consumers loaded */
   };
 
   // Public API
@@ -3631,11 +3847,377 @@ ConsumerModule.loadCustomConsumers();
 SearchEngine.init();
 DriveSync.init();
 AuthModule.init();
-AgencyModule.applyToHeader(); // L5: show agency name
+AgencyModule.applyToHeader();
 StockSnapshot.forceToday();
 ReconciliationModule.init();
 initDates();
 refresh();
+// PinSecurity.init() called after declaration — see end of security section
+
+
+
+// ═══════════════════════════════════════════════════════════════════
+// SECURE STORE — AES-256 encryption layer using CryptoJS
+// Key derived from PIN via SHA-256
+// All business data encrypted at rest in localStorage
+// ═══════════════════════════════════════════════════════════════════
+const SecureStore = (() => {
+  'use strict';
+  const PIN_HASH_KEY = 'gt_pin_hash';  // stores SHA-256 of PIN (never PIN itself)
+  const ENC_PREFIX   = 'ENC::';        // prefix to identify encrypted values
+  let _key = null;                      // AES key (in-memory only, cleared on lock)
+
+  const ready     = ()  => _key !== null && typeof CryptoJS !== 'undefined';
+  const hasPinSet = ()  => !!localStorage.getItem(PIN_HASH_KEY);
+
+  // Derive AES key from PIN using SHA-256
+  const _deriveKey = (pin) =>
+    CryptoJS.SHA256(pin + 'gt_salt_v1').toString();
+
+  // Save PIN hash (for future verification) + activate key
+  const setPin = (pin) => {
+    const hash = _deriveKey(pin);
+    localStorage.setItem(PIN_HASH_KEY, hash);
+    _key = hash;
+  };
+
+  // Verify PIN and activate key
+  const verifyPin = (pin) => {
+    const stored = localStorage.getItem(PIN_HASH_KEY);
+    if (!stored) return false;
+    const hash = _deriveKey(pin);
+    if (hash !== stored) return false;
+    _key = hash;
+    return true;
+  };
+
+  // Clear key from memory (lock)
+  const lock = () => { _key = null; };
+
+  // Encrypt string value
+  const encrypt = (plaintext) => {
+    if (!ready()) return plaintext;
+    try {
+      const cipher = CryptoJS.AES.encrypt(plaintext, _key).toString();
+      return ENC_PREFIX + cipher;
+    } catch (e) { return plaintext; }
+  };
+
+  // Decrypt — returns null if decryption fails
+  const decrypt = (ciphertext) => {
+    if (!ciphertext) return null;
+    // Not encrypted (legacy plain data)
+    if (!ciphertext.startsWith(ENC_PREFIX)) return ciphertext;
+    if (!ready()) return null;
+    try {
+      const cipher  = ciphertext.slice(ENC_PREFIX.length);
+      const bytes   = CryptoJS.AES.decrypt(cipher, _key);
+      const plain   = bytes.toString(CryptoJS.enc.Utf8);
+      return plain || null;
+    } catch (e) { return null; }
+  };
+
+  // Export ALL app data as encrypted JSON blob (.gtrack file)
+  const exportAll = () => {
+    if (!ready()) { alert('Unlock the app first before exporting.'); return null; }
+    const payload = {
+      v: 1, ts: new Date().toISOString(), app: 'GasTrack',
+      data: {
+        stock:       JSON.stringify(stock),
+        deliveries:  JSON.stringify(deliveries),
+        truckRefills:JSON.stringify(truckRefills),
+        transfers:   JSON.stringify(transfers),
+      }
+    };
+    const json    = JSON.stringify(payload);
+    const cipher  = ENC_PREFIX + CryptoJS.AES.encrypt(json, _key).toString();
+    return cipher;
+  };
+
+  // Import from encrypted .gtrack file
+  const importAll = (ciphertext) => {
+    if (!ready()) { return { ok: false, msg: 'Unlock the app first.' }; }
+    if (!ciphertext.startsWith(ENC_PREFIX)) {
+      return { ok: false, msg: 'Invalid backup file format.' };
+    }
+    try {
+      const cipher = ciphertext.slice(ENC_PREFIX.length);
+      const bytes  = CryptoJS.AES.decrypt(cipher, _key);
+      const plain  = bytes.toString(CryptoJS.enc.Utf8);
+      if (!plain)  return { ok: false, msg: 'Wrong PIN or corrupted file.' };
+      const payload = JSON.parse(plain);
+      if (!payload.data) return { ok: false, msg: 'Invalid backup structure.' };
+      return { ok: true, payload };
+    } catch (e) { return { ok: false, msg: 'Decryption failed: ' + e.message }; }
+  };
+
+  // Re-encrypt ALL existing localStorage data with new key (call after PIN set)
+  const migrateExisting = () => {
+    if (!ready()) return;
+    const keys = ['gt_stock','gt_deliveries','gt_truck','gt_transfer'];
+    const agKeys = ['stock','deliveries','truck','transfer'].map(k => _saas.key(k));
+    [...keys, ...agKeys].forEach(k => {
+      const raw = localStorage.getItem(k);
+      if (raw && !raw.startsWith(ENC_PREFIX)) {
+        // It's plain JSON — encrypt it now
+        localStorage.setItem(k, encrypt(raw));
+      }
+    });
+  };
+
+  return { ready, hasPinSet, setPin, verifyPin, lock, encrypt, decrypt, exportAll, importAll, migrateExisting };
+})();
+
+
+// ═══════════════════════════════════════════════════════════════════
+// PIN SECURITY — UI controller for PIN overlay + auto-lock
+// ═══════════════════════════════════════════════════════════════════
+const PinSecurity = (() => {
+  'use strict';
+
+  const AUTO_LOCK_MS  = 10 * 60 * 1000;  // 10 minutes
+  const PIN_LENGTH    = 6;
+
+  let _buffer      = '';     // current PIN digits entered
+  let _mode        = 'verify'; // 'verify' | 'setup' | 'confirm'
+  let _setupFirst  = '';     // first entry during setup
+  let _lockTimer   = null;
+  let _countdown   = null;
+  let _remaining   = AUTO_LOCK_MS;
+  let _isLocked    = true;
+
+  // ── DOM helpers ────────────────────────────────────────────────
+  const _overlay  = () => document.getElementById('pinOverlay');
+  const _msg      = () => document.getElementById('pinMsg');
+  const _subdiv   = () => document.getElementById('pinSubText');
+  const _badge    = () => document.getElementById('pinSetupBadge');
+  const _forgot   = () => document.getElementById('pinForgotBtn');
+  const _lockDisp = () => document.getElementById('lockTimerDisp');
+  const _lockBadge= () => document.getElementById('lockBadge');
+
+  // ── Dot animation ──────────────────────────────────────────────
+  const _updateDots = (len, state) => {
+    for (let i = 0; i < PIN_LENGTH; i++) {
+      const d = document.getElementById('pd' + i);
+      if (!d) continue;
+      d.className = 'pin-dot' + (i < len ? ' filled' : '') + (state ? ' ' + state : '');
+    }
+  };
+
+  // ── Show/hide overlay ──────────────────────────────────────────
+  const show = () => {
+    const ov = _overlay();
+    if (ov) { ov.classList.remove('pin-hidden'); }
+    _isLocked = true;
+    if (_lockBadge()) _lockBadge().style.display = 'none';
+    _buffer = '';
+    _updateDots(0);
+    _setMode(SecureStore.hasPinSet() ? 'verify' : 'setup');
+  };
+
+  const hide = () => {
+    const ov = _overlay();
+    if (!ov) return;
+    ov.classList.add('pin-hidden');
+    _isLocked = false;
+    if (_lockBadge()) _lockBadge().style.display = 'flex';
+    _startAutoLock();
+  };
+
+  // ── Mode text ──────────────────────────────────────────────────
+  const _setMode = (mode) => {
+    _mode = mode;
+    _msg().textContent = '';
+    if (mode === 'setup') {
+      _subdiv().textContent = 'Create a 6-digit PIN for this device';
+      _badge().style.display = 'block';
+      _forgot().style.display = 'none';
+    } else if (mode === 'confirm') {
+      _subdiv().textContent = 'Re-enter PIN to confirm';
+      _badge().style.display = 'none';
+    } else {
+      _subdiv().textContent = 'Enter your 6-digit PIN to continue';
+      _badge().style.display = 'none';
+      _forgot().style.display = 'block';
+    }
+  };
+
+  // ── Keypad press ───────────────────────────────────────────────
+  const press = (digit) => {
+    if (_buffer.length >= PIN_LENGTH) return;
+    _buffer += digit;
+    _updateDots(_buffer.length);
+    _msg().textContent = '';
+    if (_buffer.length === PIN_LENGTH) {
+      setTimeout(_submit, 120); // slight delay for last dot animation
+    }
+  };
+
+  const backspace = () => {
+    _buffer = _buffer.slice(0, -1);
+    _updateDots(_buffer.length);
+    _msg().textContent = '';
+  };
+
+  // ── Submit PIN ─────────────────────────────────────────────────
+  const _submit = () => {
+    const pin = _buffer;
+    _buffer = '';
+
+    if (_mode === 'setup') {
+      _setupFirst = pin;
+      _updateDots(0);
+      _setMode('confirm');
+      return;
+    }
+
+    if (_mode === 'confirm') {
+      if (pin !== _setupFirst) {
+        _updateDots(PIN_LENGTH, 'error');
+        setTimeout(() => { _updateDots(0); _setMode('setup'); }, 800);
+        _msg().textContent = 'PINs do not match. Start over.';
+        _setupFirst = '';
+        return;
+      }
+      SecureStore.setPin(pin);
+      SecureStore.migrateExisting(); // encrypt existing plain data
+      _updateDots(PIN_LENGTH, 'success');
+      setTimeout(() => { _msg().textContent = ''; hide(); }, 500);
+      return;
+    }
+
+    // mode === 'verify'
+    if (SecureStore.verifyPin(pin)) {
+      _updateDots(PIN_LENGTH, 'success');
+      setTimeout(() => { hide(); }, 400);
+    } else {
+      _updateDots(PIN_LENGTH, 'error');
+      setTimeout(() => _updateDots(0), 700);
+      _msg().textContent = 'Incorrect PIN. Try again.';
+    }
+  };
+
+  // ── Auto-lock: timer + countdown ──────────────────────────────
+  const _resetTimer = () => {
+    _remaining = AUTO_LOCK_MS;
+  };
+
+  const _startAutoLock = () => {
+    _clearTimers();
+    _remaining = AUTO_LOCK_MS;
+    _lockTimer = setTimeout(() => { lock(); }, AUTO_LOCK_MS);
+    // Countdown display: tick every second
+    _countdown = setInterval(() => {
+      _remaining -= 1000;
+      const disp = _lockDisp();
+      if (disp) {
+        const m = String(Math.floor(_remaining / 60000)).padStart(2,'0');
+        const s = String(Math.floor((_remaining % 60000) / 1000)).padStart(2,'0');
+        disp.textContent = `Auto-lock in ${m}:${s}`;
+      }
+    }, 1000);
+  };
+
+  const _clearTimers = () => {
+    if (_lockTimer)  { clearTimeout(_lockTimer);  _lockTimer = null;  }
+    if (_countdown)  { clearInterval(_countdown); _countdown = null;  }
+  };
+
+  // ── Activity detection ─────────────────────────────────────────
+  const _onActivity = () => {
+    if (_isLocked) return;
+    _clearTimers();
+    _startAutoLock();
+  };
+
+  // ── Public: lock dashboard ─────────────────────────────────────
+  const lock = () => {
+    _clearTimers();
+    SecureStore.lock();
+    _isLocked = true;
+    show();
+  };
+
+  // ── Public: reset PIN (clears ALL data) ───────────────────────
+  const resetPin = () => {
+    const confirmed = confirm(
+      'WARNING: Resetting PIN will DELETE all locally stored data (stock, deliveries, etc.). This cannot be undone. Continue?'
+    );
+    if (!confirmed) return;
+    const double = confirm('Are you absolutely sure? All data will be lost.');
+    if (!double) return;
+    localStorage.clear();
+    location.reload();
+  };
+
+  // ── Export encrypted backup ────────────────────────────────────
+  const exportEncrypted = () => {
+    const cipher = SecureStore.exportAll();
+    if (!cipher) return;
+    const blob = new Blob([cipher], { type: 'text/plain' });
+    const url  = URL.createObjectURL(blob);
+    const a    = document.createElement('a');
+    a.href     = url;
+    a.download = `gastrack_backup_${new Date().toISOString().split('T')[0]}.gtrack`;
+    a.click();
+    URL.revokeObjectURL(url);
+    toast('✓ Encrypted backup downloaded (.gtrack)');
+  };
+
+  // ── Import encrypted backup ────────────────────────────────────
+  const importEncrypted = () => {
+    const fi = document.getElementById('pinImportFile');
+    if (fi) { fi.value = ''; fi.click(); }
+  };
+
+  const processImport = (input) => {
+    const file = input.files[0];
+    if (!file) return;
+    const reader = new FileReader();
+    reader.onload = (e) => {
+      const result = SecureStore.importAll(e.target.result);
+      if (!result.ok) { alert('Import failed: ' + result.msg); return; }
+      const { data } = result.payload;
+      // Confirm overwrite
+      if (!confirm('This will replace ALL current data with the backup. Continue?')) return;
+      try {
+        const _enc = (v) => SecureStore.ready() ? SecureStore.encrypt(v) : v;
+        if (data.stock)        localStorage.setItem(_saas.key('stock'),       _enc(data.stock));
+        if (data.deliveries)   localStorage.setItem(_saas.key('deliveries'),  _enc(data.deliveries));
+        if (data.truckRefills) localStorage.setItem(_saas.key('truck'),       _enc(data.truckRefills));
+        if (data.transfers)    localStorage.setItem(_saas.key('transfer'),    _enc(data.transfers));
+        toast('✓ Backup imported successfully. Reloading...');
+        setTimeout(() => location.reload(), 1200);
+      } catch (err) { alert('Import error: ' + err.message); }
+    };
+    reader.readAsText(file);
+  };
+
+  // ── Keyboard support ──────────────────────────────────────────
+  const _onKey = (e) => {
+    if (_isLocked) {
+      if (e.key >= '0' && e.key <= '9') press(e.key);
+      if (e.key === 'Backspace') backspace();
+    }
+  };
+
+  // ── Init ──────────────────────────────────────────────────────
+  const init = () => {
+    // Bind activity listeners (reset auto-lock on any interaction)
+    ['mousemove','mousedown','touchstart','keydown','scroll'].forEach(ev =>
+      document.addEventListener(ev, _onActivity, { passive: true })
+    );
+    document.addEventListener('keydown', _onKey);
+    // Show PIN overlay immediately
+    show();
+  };
+
+  return { init, show, lock, press, backspace, resetPin, exportEncrypted, importEncrypted, processImport };
+})();
+
+// Start PIN security after all declarations are ready
+PinSecurity.init();
+
 
 </script>
 </body>
