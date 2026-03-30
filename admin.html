@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Bluebot Admin — Manage Requests</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-slate-900 text-white p-8">
+    <h1 class="text-3xl font-bold mb-6">Pending Agency Requests</h1>
+    
+    <div id="requests-list" class="grid gap-4">
+        <p id="loading">Loading requests...</p>
+    </div>
+
+    <script type="module">
+        import { initializeApp } from 'https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js';
+        import { getFirestore, collection, getDocs, doc, setDoc, deleteDoc, query, where } from 'https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js';
+
+        // Wahi Config use karein jo index file mein hai
+        const firebaseConfig = {
+            apiKey: "AIzaSyBa--BTPVvLBq4wfCJoUKXTbIZwKKdN2zE",
+            authDomain: "gasagency-b0723.firebaseapp.com",
+            projectId: "gasagency-b0723",
+            storageBucket: "gasagency-b0723.firebasestorage.app",
+            messagingSenderId: "179078142870",
+            appId: "1:179078142870:web:28e76003a3c2a6f18b9bb7"
+        };
+
+        const app = initializeApp(firebaseConfig);
+        const db = getFirestore(app);
+
+        async function loadRequests() {
+            const q = query(collection(db, "access_requests"), where("status", "==", "pending"));
+            const querySnapshot = await getDocs(q);
+            const container = document.getElementById('requests-list');
+            container.innerHTML = '';
+
+            if(querySnapshot.empty) {
+                container.innerHTML = '<p>No pending requests.</p>';
+                return;
+            }
+
+            querySnapshot.forEach((documentSnapshot) => {
+                const data = documentSnapshot.data();
+                const id = documentSnapshot.id;
+
+                const card = `
+                    <div class="bg-slate-800 p-6 rounded-lg border border-slate-700 flex justify-between items-center">
+                        <div>
+                            <h2 class="text-xl font-bold">${data.agencyName}</h2>
+                            <p class="text-slate-400">${data.ownerName} (${data.email})</p>
+                            <p class="text-sm text-slate-500">City: ${data.city} | Phone: ${data.phone}</p>
+                        </div>
+                        <button onclick="approveAgency('${id}', '${data.email}', '${data.agencyName}')" class="bg-green-600 hover:bg-green-500 px-4 py-2 rounded font-bold">Approve</button>
+                    </div>
+                `;
+                container.innerHTML += card;
+            });
+        }
+
+        window.approveAgency = async (requestId, email, agencyName) => {
+            try {
+                // 1. 'agencies' collection mein naya document banayein
+                await setDoc(doc(db, "agencies", email), {
+                    email: email,
+                    agencyName: agencyName,
+                    approved: true,
+                    role: "owner",
+                    approvedAt: new Date()
+                });
+
+                // 2. 'access_requests' se delete karein ya status update karein
+                await deleteDoc(doc(db, "access_requests", requestId));
+
+                alert("Agency Approved Successfully!");
+                loadRequests();
+            } catch (error) {
+                console.error("Error approving:", error);
+                alert("Something went wrong!");
+            }
+        };
+
+        loadRequests();
+    </script>
+</body>
+</html>
