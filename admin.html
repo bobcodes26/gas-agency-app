@@ -1,86 +1,1094 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <title>Bluebot Admin — Manage Requests</title>
-    <script src="https://cdn.tailwindcss.com"></script>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1"/>
+<title>Bluebot — Admin Panel</title>
+
+<link rel="preconnect" href="https://fonts.googleapis.com"/>
+<link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@700;900&family=Barlow:wght@400;500;600;700&display=swap" rel="stylesheet"/>
+<link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css" rel="stylesheet"/>
+
+<style>
+/* ══════════════════════════════════════════════════════
+   BASE
+══════════════════════════════════════════════════════ */
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+html, body { height: 100%; font-family: 'Barlow', sans-serif; }
+body {
+  min-height: 100vh;
+  background: #0c1628;
+  color: #e2e8f0;
+  overflow-x: hidden;
+}
+
+/* ══════════════════════════════════════════════════════
+   BACKGROUND
+══════════════════════════════════════════════════════ */
+.bg-pattern {
+  position: fixed; inset: 0; pointer-events: none; z-index: 0;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='80' height='100' viewBox='0 0 80 100'%3E%3Crect x='22' y='22' width='36' height='52' rx='12' fill='none' stroke='%23ffffff' stroke-width='1.2' opacity='0.03'/%3E%3Crect x='29' y='13' width='22' height='13' rx='6' fill='none' stroke='%23ffffff' stroke-width='1.2' opacity='0.03'/%3E%3C/svg%3E");
+  background-size: 80px 100px;
+}
+.bg-overlay {
+  position: fixed; inset: 0; pointer-events: none; z-index: 0;
+  background: radial-gradient(ellipse at 15% 15%, rgba(30,58,138,.3) 0%, transparent 55%),
+              radial-gradient(ellipse at 85% 85%, rgba(15,23,42,.6) 0%, transparent 55%);
+}
+
+/* ══════════════════════════════════════════════════════
+   AUTH GATE — full screen
+══════════════════════════════════════════════════════ */
+#authGate {
+  position: fixed; inset: 0; z-index: 9999;
+  background: #0c1628;
+  display: flex; align-items: center; justify-content: center;
+  padding: 24px;
+}
+.gate-card {
+  background: rgba(255,255,255,.055);
+  backdrop-filter: blur(28px);
+  -webkit-backdrop-filter: blur(28px);
+  border: 1px solid rgba(255,255,255,.12);
+  border-radius: 22px;
+  padding: 40px 32px;
+  width: 100%; max-width: 340px;
+  box-shadow: 0 32px 80px rgba(0,0,0,.45);
+  text-align: center;
+  animation: card-in .5s cubic-bezier(.34,1.45,.64,1) both;
+}
+@keyframes card-in {
+  from { opacity:0; transform: translateY(30px) scale(.95); }
+  to   { opacity:1; transform: translateY(0)    scale(1);   }
+}
+.gate-logo {
+  width: 64px; height: 64px; border-radius: 18px;
+  background: linear-gradient(145deg,#3b82f6,#1d4ed8);
+  display: flex; align-items: center; justify-content: center;
+  font-size: 1.8rem; color: #fff; margin: 0 auto 18px;
+  box-shadow: 0 8px 28px rgba(37,99,235,.5);
+}
+.gate-title {
+  font-family: 'Barlow Condensed', sans-serif;
+  font-size: 1.8rem; font-weight: 900; color: #fff;
+  letter-spacing: 1px; margin-bottom: 4px;
+}
+.gate-sub {
+  font-size: .72rem; color: rgba(255,255,255,.35);
+  text-transform: uppercase; letter-spacing: .6px; margin-bottom: 28px;
+}
+.g-btn {
+  display: flex; align-items: center; justify-content: center; gap: 10px;
+  background: #fff; border: none; border-radius: 12px;
+  padding: 0 18px; height: 50px; width: 100%;
+  font-size: .93rem; font-weight: 700; font-family: 'Barlow', sans-serif;
+  color: #1f2937; cursor: pointer;
+  box-shadow: 0 2px 14px rgba(0,0,0,.22);
+  transition: transform .15s, box-shadow .15s;
+  -webkit-tap-highlight-color: transparent;
+}
+.g-btn:hover { transform: translateY(-2px); box-shadow: 0 8px 26px rgba(0,0,0,.3); }
+.g-btn:active { transform: scale(.97); }
+.g-btn:disabled { opacity: .6; cursor: not-allowed; transform: none; }
+.g-btn svg { width: 19px; height: 19px; flex-shrink: 0; }
+.gate-msg {
+  margin-top: 14px; min-height: 20px;
+  font-size: .74rem; font-weight: 600; border-radius: 8px;
+  transition: all .2s;
+}
+.gate-msg.loading {
+  color: rgba(255,255,255,.5);
+  display: flex; align-items: center; justify-content: center; gap: 8px; padding: 8px;
+}
+.gate-msg.error {
+  color: #fca5a5; background: rgba(239,68,68,.13);
+  border: 1px solid rgba(239,68,68,.2); padding: 8px 12px;
+}
+.gate-msg.hidden { display: none; }
+
+/* ══════════════════════════════════════════════════════
+   TOP NAV
+══════════════════════════════════════════════════════ */
+.top-nav {
+  position: sticky; top: 0; z-index: 100;
+  background: rgba(14,22,42,.95);
+  backdrop-filter: blur(16px);
+  border-bottom: 1px solid rgba(255,255,255,.08);
+  padding: 0 20px;
+  display: flex; align-items: center; justify-content: space-between;
+  height: 60px;
+}
+.nav-logo {
+  display: flex; align-items: center; gap: 10px;
+}
+.nav-logo-icon {
+  width: 34px; height: 34px; border-radius: 10px;
+  background: linear-gradient(145deg,#3b82f6,#1d4ed8);
+  display: flex; align-items: center; justify-content: center;
+  font-size: 1rem; color: #fff;
+}
+.nav-app-name {
+  font-family: 'Barlow Condensed', sans-serif;
+  font-size: 1.3rem; font-weight: 900; color: #fff; letter-spacing: .5px;
+}
+.nav-badge {
+  font-size: .6rem; font-weight: 800; letter-spacing: .5px;
+  text-transform: uppercase; color: #fcd34d;
+  background: rgba(245,158,11,.15); border: 1px solid rgba(245,158,11,.25);
+  border-radius: 6px; padding: 2px 7px; margin-left: 4px;
+}
+.nav-right { display: flex; align-items: center; gap: 10px; }
+.user-chip {
+  display: flex; align-items: center; gap: 8px;
+  background: rgba(255,255,255,.06);
+  border: 1px solid rgba(255,255,255,.1);
+  border-radius: 20px; padding: 5px 12px 5px 6px;
+  cursor: pointer; transition: all .15s;
+}
+.user-chip:hover { background: rgba(255,255,255,.1); }
+.user-avatar {
+  width: 28px; height: 28px; border-radius: 50%;
+  background: linear-gradient(135deg,#3b82f6,#1d4ed8);
+  display: flex; align-items: center; justify-content: center;
+  font-size: .8rem; font-weight: 700; color: #fff; flex-shrink: 0;
+}
+.user-name { font-size: .75rem; font-weight: 600; color: #cbd5e1; }
+
+/* ══════════════════════════════════════════════════════
+   TAB BAR
+══════════════════════════════════════════════════════ */
+.tab-bar {
+  background: rgba(255,255,255,.025);
+  border-bottom: 1px solid rgba(255,255,255,.07);
+  display: flex; gap: 2px; padding: 0 16px;
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
+}
+.tab-bar::-webkit-scrollbar { display: none; }
+.tab-btn {
+  display: flex; align-items: center; gap: 6px;
+  padding: 0 16px; height: 48px; white-space: nowrap;
+  font-size: .8rem; font-weight: 700; font-family: 'Barlow', sans-serif;
+  color: rgba(255,255,255,.4); background: none;
+  border: none; border-bottom: 2px solid transparent;
+  cursor: pointer; transition: all .15s;
+  -webkit-tap-highlight-color: transparent;
+}
+.tab-btn.active { color: #60a5fa; border-bottom-color: #3b82f6; }
+.tab-btn:hover:not(.active) { color: rgba(255,255,255,.7); }
+.tab-btn .cnt {
+  min-width: 18px; height: 18px; border-radius: 9px;
+  background: rgba(255,255,255,.1); padding: 0 5px;
+  font-size: .62rem; display: flex; align-items: center; justify-content: center;
+}
+.tab-btn.active .cnt { background: rgba(59,130,246,.25); color: #93c5fd; }
+.cnt.has-new { background: rgba(239,68,68,.25); color: #fca5a5; animation: pulse-dot 2s infinite; }
+@keyframes pulse-dot { 0%,100%{opacity:1} 50%{opacity:.6} }
+
+/* ══════════════════════════════════════════════════════
+   PAGE CONTENT
+══════════════════════════════════════════════════════ */
+.page-wrap {
+  position: relative; z-index: 1;
+  max-width: 900px; margin: 0 auto;
+  padding: 20px 16px 60px;
+}
+.tab-page { display: none; }
+.tab-page.active { display: block; }
+
+/* Section header */
+.section-head {
+  display: flex; align-items: center; justify-content: space-between;
+  margin-bottom: 16px; flex-wrap: wrap; gap: 10px;
+}
+.section-title {
+  font-family: 'Barlow Condensed', sans-serif;
+  font-size: 1.3rem; font-weight: 900; color: #fff; letter-spacing: .5px;
+  display: flex; align-items: center; gap: 8px;
+}
+
+/* Stats row */
+.stats-row {
+  display: grid; grid-template-columns: repeat(auto-fit, minmax(130px, 1fr));
+  gap: 12px; margin-bottom: 24px;
+}
+.stat-tile {
+  background: rgba(255,255,255,.045);
+  border: 1px solid rgba(255,255,255,.08);
+  border-radius: 14px; padding: 16px;
+}
+.stat-tile .val {
+  font-family: 'Barlow Condensed', sans-serif;
+  font-size: 2.2rem; font-weight: 900; color: #fff; line-height: 1;
+}
+.stat-tile .lbl {
+  font-size: .64rem; font-weight: 700; letter-spacing: .6px;
+  text-transform: uppercase; color: rgba(255,255,255,.35); margin-top: 4px;
+}
+.stat-tile.blue .val { color: #60a5fa; }
+.stat-tile.amber .val { color: #fcd34d; }
+.stat-tile.green .val { color: #6ee7b7; }
+.stat-tile.red   .val { color: #fca5a5; }
+
+/* Cards / Table */
+.card {
+  background: rgba(255,255,255,.04);
+  border: 1px solid rgba(255,255,255,.08);
+  border-radius: 16px; overflow: hidden;
+  margin-bottom: 16px;
+}
+.card-header {
+  padding: 14px 18px 12px;
+  border-bottom: 1px solid rgba(255,255,255,.06);
+  display: flex; align-items: center; justify-content: space-between;
+  gap: 8px; flex-wrap: wrap;
+}
+.card-title {
+  font-size: .72rem; font-weight: 800; letter-spacing: .6px;
+  text-transform: uppercase; color: rgba(255,255,255,.4);
+}
+.card-body { padding: 0; }
+
+/* Request / Agency rows */
+.row-item {
+  padding: 16px 18px;
+  border-bottom: 1px solid rgba(255,255,255,.05);
+  display: flex; align-items: flex-start; gap: 14px;
+  transition: background .15s;
+}
+.row-item:last-child { border-bottom: none; }
+.row-item:hover { background: rgba(255,255,255,.025); }
+.row-icon {
+  width: 40px; height: 40px; border-radius: 12px; flex-shrink: 0;
+  display: flex; align-items: center; justify-content: center; font-size: 1.1rem;
+}
+.row-icon.pending   { background: rgba(245,158,11,.15); color: #fcd34d; }
+.row-icon.approved  { background: rgba(16,185,129,.15);  color: #6ee7b7; }
+.row-icon.rejected  { background: rgba(239,68,68,.15);   color: #fca5a5; }
+.row-body { flex: 1; min-width: 0; }
+.row-name {
+  font-weight: 700; color: #f1f5f9; font-size: .92rem;
+  white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+}
+.row-email { font-size: .75rem; color: rgba(255,255,255,.4); margin-top: 2px; }
+.row-meta  { font-size: .7rem; color: rgba(255,255,255,.3); margin-top: 4px; }
+.row-actions { display: flex; gap: 8px; flex-shrink: 0; align-items: center; margin-top: 4px; }
+
+/* Status badge */
+.badge {
+  display: inline-flex; align-items: center; gap: 4px;
+  border-radius: 20px; padding: 3px 10px;
+  font-size: .62rem; font-weight: 800; letter-spacing: .4px; text-transform: uppercase;
+}
+.badge.pending  { background: rgba(245,158,11,.15); color: #fcd34d; border: 1px solid rgba(245,158,11,.2); }
+.badge.approved { background: rgba(16,185,129,.15);  color: #6ee7b7; border: 1px solid rgba(16,185,129,.2); }
+.badge.rejected { background: rgba(239,68,68,.15);   color: #fca5a5; border: 1px solid rgba(239,68,68,.2);  }
+.badge.owner    { background: rgba(245,158,11,.15); color: #fcd34d; border: 1px solid rgba(245,158,11,.2); }
+.badge.admin    { background: rgba(139,92,246,.15); color: #c4b5fd; border: 1px solid rgba(139,92,246,.2); }
+.badge.delivery { background: rgba(16,185,129,.15); color: #6ee7b7; border: 1px solid rgba(16,185,129,.2); }
+.badge.manager  { background: rgba(59,130,246,.15); color: #93c5fd; border: 1px solid rgba(59,130,246,.2); }
+
+/* Action buttons */
+.btn {
+  display: inline-flex; align-items: center; gap: 5px;
+  border: none; border-radius: 8px; padding: 6px 12px;
+  font-size: .72rem; font-weight: 700; font-family: 'Barlow', sans-serif;
+  cursor: pointer; transition: all .15s;
+  -webkit-tap-highlight-color: transparent;
+}
+.btn-approve { background: rgba(16,185,129,.2); color: #6ee7b7; border: 1px solid rgba(16,185,129,.3); }
+.btn-approve:hover { background: rgba(16,185,129,.35); }
+.btn-reject  { background: rgba(239,68,68,.15);  color: #fca5a5; border: 1px solid rgba(239,68,68,.25); }
+.btn-reject:hover  { background: rgba(239,68,68,.28); }
+.btn-revoke  { background: rgba(239,68,68,.12);  color: #fca5a5; border: 1px solid rgba(239,68,68,.2); }
+.btn-revoke:hover  { background: rgba(239,68,68,.25); }
+.btn-view    { background: rgba(59,130,246,.15); color: #93c5fd; border: 1px solid rgba(59,130,246,.25); }
+.btn-view:hover    { background: rgba(59,130,246,.28); }
+.btn-primary { background: linear-gradient(135deg,#2563eb,#1d4ed8); color: #fff; box-shadow: 0 4px 14px rgba(37,99,235,.35); }
+.btn-primary:hover { transform: translateY(-1px); box-shadow: 0 6px 18px rgba(37,99,235,.45); }
+.btn:disabled { opacity: .5; cursor: not-allowed; transform: none !important; }
+
+/* Spinner inline */
+.spin { width: 14px; height: 14px; border: 2px solid rgba(255,255,255,.15); border-top-color: rgba(255,255,255,.7); border-radius: 50%; animation: spin .6s linear infinite; display: inline-block; }
+@keyframes spin { to { transform: rotate(360deg); } }
+
+/* Empty state */
+.empty {
+  text-align: center; padding: 48px 24px;
+  color: rgba(255,255,255,.2); font-size: .85rem;
+}
+.empty i { font-size: 2.5rem; display: block; margin-bottom: 12px; opacity: .3; }
+
+/* Loading overlay */
+.loading-row {
+  padding: 32px; text-align: center;
+  color: rgba(255,255,255,.3); font-size: .8rem;
+  display: flex; align-items: center; justify-content: center; gap: 10px;
+}
+.spin-lg { width: 22px; height: 22px; border-width: 2px; }
+
+/* Toast */
+.toast {
+  position: fixed; bottom: 24px; left: 50%; transform: translateX(-50%) translateY(80px);
+  background: #1e293b; border: 1px solid rgba(255,255,255,.1);
+  border-radius: 12px; padding: 12px 20px;
+  font-size: .82rem; font-weight: 600; color: #e2e8f0;
+  display: flex; align-items: center; gap: 8px;
+  box-shadow: 0 8px 28px rgba(0,0,0,.4);
+  z-index: 9000; transition: transform .3s cubic-bezier(.34,1.4,.64,1), opacity .3s;
+  opacity: 0; white-space: nowrap;
+}
+.toast.show { transform: translateX(-50%) translateY(0); opacity: 1; }
+.toast.success { border-color: rgba(16,185,129,.3); }
+.toast.error   { border-color: rgba(239,68,68,.3); }
+.toast i { font-size: 1rem; }
+.toast.success i { color: #6ee7b7; }
+.toast.error   i { color: #fca5a5; }
+
+/* ── Add Agency Modal ────────────────────── */
+.modal-bg {
+  position: fixed; inset: 0; z-index: 8000;
+  background: rgba(0,0,0,.6); backdrop-filter: blur(6px);
+  display: none; align-items: flex-end; justify-content: center;
+}
+.modal-bg.show { display: flex; }
+.modal-sheet {
+  background: #0f1e38;
+  border: 1px solid rgba(255,255,255,.1);
+  border-radius: 22px 22px 0 0;
+  width: 100%; max-width: 500px;
+  padding: 28px 24px 48px;
+  box-shadow: 0 -20px 60px rgba(0,0,0,.5);
+  animation: sheet-up .3s cubic-bezier(.34,1.3,.64,1) both;
+  max-height: 90vh; overflow-y: auto;
+}
+@keyframes sheet-up {
+  from { transform: translateY(60px); opacity: .5; }
+  to   { transform: translateY(0);    opacity: 1; }
+}
+.modal-handle {
+  width: 36px; height: 4px; background: rgba(255,255,255,.15);
+  border-radius: 2px; margin: 0 auto 22px;
+}
+.modal-title {
+  font-family: 'Barlow Condensed', sans-serif;
+  font-size: 1.2rem; font-weight: 900; color: #fff;
+  margin-bottom: 18px;
+}
+.form-group { margin-bottom: 14px; }
+.form-label {
+  font-size: .68rem; font-weight: 800; letter-spacing: .5px;
+  text-transform: uppercase; color: rgba(255,255,255,.4); margin-bottom: 6px; display: block;
+}
+.form-input {
+  width: 100%;
+  background: rgba(255,255,255,.06);
+  border: 1px solid rgba(255,255,255,.1);
+  border-radius: 10px; padding: 11px 14px;
+  font-size: .9rem; font-family: 'Barlow', sans-serif; color: #fff;
+  outline: none; transition: border-color .15s, background .15s;
+}
+.form-input::placeholder { color: rgba(255,255,255,.28); }
+.form-input:focus { border-color: rgba(59,130,246,.6); background: rgba(59,130,246,.07); }
+select.form-input option { background: #0f1e38; color: #fff; }
+.form-note { font-size: .68rem; color: rgba(255,255,255,.25); margin-top: 6px; }
+
+/* Confirm modal */
+.confirm-modal {
+  position: fixed; inset: 0; z-index: 9500;
+  background: rgba(0,0,0,.65); backdrop-filter: blur(8px);
+  display: none; align-items: center; justify-content: center; padding: 24px;
+}
+.confirm-modal.show { display: flex; }
+.confirm-card {
+  background: #0f1e38; border: 1px solid rgba(255,255,255,.12);
+  border-radius: 18px; padding: 28px 24px;
+  width: 100%; max-width: 320px;
+  box-shadow: 0 24px 60px rgba(0,0,0,.5);
+  animation: card-in .35s cubic-bezier(.34,1.45,.64,1) both;
+}
+.confirm-icon { font-size: 2rem; margin-bottom: 12px; text-align: center; }
+.confirm-title { font-weight: 700; color: #fff; text-align: center; margin-bottom: 6px; }
+.confirm-msg   { font-size: .8rem; color: rgba(255,255,255,.4); text-align: center; margin-bottom: 20px; }
+.confirm-btns  { display: flex; gap: 10px; }
+.confirm-btns .btn { flex: 1; justify-content: center; height: 42px; font-size: .82rem; }
+
+/* Spinner */
+.spin { display: inline-block; }
+
+/* ── Detail expand panel ─────────────────── */
+.detail-panel {
+  background: rgba(255,255,255,.025);
+  border-top: 1px solid rgba(255,255,255,.06);
+  padding: 14px 18px;
+  font-size: .78rem; color: rgba(255,255,255,.5);
+  display: none;
+}
+.detail-panel.open { display: block; }
+.detail-grid {
+  display: grid; grid-template-columns: 1fr 1fr; gap: 8px;
+}
+.detail-field label { font-size: .62rem; font-weight: 700; text-transform: uppercase; letter-spacing: .5px; color: rgba(255,255,255,.25); display: block; margin-bottom: 2px; }
+.detail-field span  { color: rgba(255,255,255,.65); }
+
+/* Mobile responsive */
+@media (max-width: 480px) {
+  .row-actions { flex-wrap: wrap; }
+  .stats-row { grid-template-columns: 1fr 1fr; }
+}
+</style>
 </head>
-<body class="bg-slate-900 text-white p-8">
-    <h1 class="text-3xl font-bold mb-6">Pending Agency Requests</h1>
-    
-    <div id="requests-list" class="grid gap-4">
-        <p id="loading">Loading requests...</p>
+<body>
+
+<div class="bg-pattern"></div>
+<div class="bg-overlay"></div>
+
+<!-- ══════════════════════════════════════════════
+     AUTH GATE
+══════════════════════════════════════════════ -->
+<div id="authGate">
+  <div class="gate-card">
+    <div class="gate-logo"><i class="bi bi-robot"></i></div>
+    <div class="gate-title">Bluebot Admin</div>
+    <div class="gate-sub">Administrator Access Only</div>
+    <button class="g-btn" id="gateSignInBtn" onclick="doAdminSignIn()">
+      <svg viewBox="0 0 48 48">
+        <path fill="#EA4335" d="M24 9.5c3.5 0 6.3 1.2 8.4 3.1l6.2-6.2C34.8 3 29.8 1 24 1 14.8 1 7 6.5 3.5 14.2l7.2 5.6C12.5 13.3 17.8 9.5 24 9.5z"/>
+        <path fill="#4285F4" d="M46.5 24.5c0-1.6-.1-3.1-.4-4.5H24v8.5h12.8c-.6 3-2.3 5.5-4.9 7.2l7.6 5.9C43.5 37.5 46.5 31.5 46.5 24.5z"/>
+        <path fill="#FBBC05" d="M10.7 28.2C10.2 26.8 10 25.4 10 24s.2-2.8.7-4.2l-7.2-5.6C1.2 17.2 0 20.5 0 24s1.2 6.8 3.5 9.8l7.2-5.6z"/>
+        <path fill="#34A853" d="M24 47c5.8 0 10.7-1.9 14.3-5.1l-7.6-5.9c-1.9 1.3-4.3 2-6.7 2-6.2 0-11.5-3.8-13.3-9.8l-7.2 5.6C7 41.5 14.8 47 24 47z"/>
+      </svg>
+      Sign in with Google
+    </button>
+    <div id="gateMsg" class="gate-msg hidden"></div>
+  </div>
+</div>
+
+<!-- ══════════════════════════════════════════════
+     TOP NAV
+══════════════════════════════════════════════ -->
+<nav class="top-nav" id="mainNav" style="display:none">
+  <div class="nav-logo">
+    <div class="nav-logo-icon"><i class="bi bi-robot"></i></div>
+    <span class="nav-app-name">Bluebot</span>
+    <span class="nav-badge">Admin</span>
+  </div>
+  <div class="nav-right">
+    <div class="user-chip" id="userChip" onclick="doSignOut()">
+      <div class="user-avatar" id="userAvatar">A</div>
+      <span class="user-name" id="userName">Admin</span>
+    </div>
+  </div>
+</nav>
+
+<!-- TAB BAR -->
+<div class="tab-bar" id="tabBar" style="display:none">
+  <button class="tab-btn active" id="tab-requests" onclick="switchTab('requests')">
+    <i class="bi bi-inbox"></i> Requests
+    <span class="cnt" id="cnt-requests">0</span>
+  </button>
+  <button class="tab-btn" id="tab-agencies" onclick="switchTab('agencies')">
+    <i class="bi bi-building"></i> Agencies
+    <span class="cnt" id="cnt-agencies">0</span>
+  </button>
+  <button class="tab-btn" id="tab-add" onclick="switchTab('add')">
+    <i class="bi bi-plus-circle"></i> Add Agency
+  </button>
+</div>
+
+<!-- ══════════════════════════════════════════════
+     MAIN CONTENT
+══════════════════════════════════════════════ -->
+<div class="page-wrap" id="mainContent" style="display:none">
+
+  <!-- ── TAB: Access Requests ───────────────── -->
+  <div class="tab-page active" id="page-requests">
+    <div class="section-head">
+      <div class="section-title">
+        <i class="bi bi-inbox-fill" style="color:#60a5fa"></i>
+        Access Requests
+      </div>
+      <button class="btn btn-view" onclick="loadRequests()">
+        <i class="bi bi-arrow-clockwise"></i> Refresh
+      </button>
     </div>
 
-    <script type="module">
-        import { initializeApp } from 'https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js';
-        import { getFirestore, collection, getDocs, doc, setDoc, deleteDoc, query, where } from 'https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js';
+    <!-- Stats -->
+    <div class="stats-row" id="req-stats">
+      <div class="stat-tile amber"><div class="val" id="stat-pending">—</div><div class="lbl">Pending</div></div>
+      <div class="stat-tile green"><div class="val" id="stat-approved-req">—</div><div class="lbl">Approved</div></div>
+      <div class="stat-tile red">  <div class="val" id="stat-rejected">—</div><div class="lbl">Rejected</div></div>
+    </div>
 
-        // Wahi Config use karein jo index file mein hai
-        const firebaseConfig = {
-            apiKey: "AIzaSyBa--BTPVvLBq4wfCJoUKXTbIZwKKdN2zE",
-            authDomain: "gasagency-b0723.firebaseapp.com",
-            projectId: "gasagency-b0723",
-            storageBucket: "gasagency-b0723.firebasestorage.app",
-            messagingSenderId: "179078142870",
-            appId: "1:179078142870:web:28e76003a3c2a6f18b9bb7"
-        };
+    <div class="card">
+      <div class="card-header">
+        <span class="card-title">All Requests</span>
+        <div style="display:flex;gap:6px">
+          <button class="btn btn-view" style="font-size:.65rem;padding:4px 10px" onclick="filterReqs('all')"    id="f-all">All</button>
+          <button class="btn" style="font-size:.65rem;padding:4px 10px;background:rgba(245,158,11,.12);color:#fcd34d;border:1px solid rgba(245,158,11,.2)" onclick="filterReqs('pending')"  id="f-pending">Pending</button>
+        </div>
+      </div>
+      <div class="card-body" id="requests-list">
+        <div class="loading-row"><span class="spin spin-lg"></span> Loading requests...</div>
+      </div>
+    </div>
+  </div>
 
-        const app = initializeApp(firebaseConfig);
-        const db = getFirestore(app);
+  <!-- ── TAB: Agencies ──────────────────────── -->
+  <div class="tab-page" id="page-agencies">
+    <div class="section-head">
+      <div class="section-title">
+        <i class="bi bi-building-fill" style="color:#60a5fa"></i>
+        Approved Agencies
+      </div>
+      <button class="btn btn-view" onclick="loadAgencies()">
+        <i class="bi bi-arrow-clockwise"></i> Refresh
+      </button>
+    </div>
 
-        async function loadRequests() {
-            const q = query(collection(db, "access_requests"), where("status", "==", "pending"));
-            const querySnapshot = await getDocs(q);
-            const container = document.getElementById('requests-list');
-            container.innerHTML = '';
+    <div class="stats-row">
+      <div class="stat-tile blue"><div class="val" id="stat-total-agencies">—</div><div class="lbl">Total</div></div>
+      <div class="stat-tile green"><div class="val" id="stat-active">—</div><div class="lbl">Active</div></div>
+    </div>
 
-            if(querySnapshot.empty) {
-                container.innerHTML = '<p>No pending requests.</p>';
-                return;
-            }
+    <div class="card">
+      <div class="card-header">
+        <span class="card-title">All Agencies</span>
+      </div>
+      <div class="card-body" id="agencies-list">
+        <div class="loading-row"><span class="spin spin-lg"></span> Loading agencies...</div>
+      </div>
+    </div>
+  </div>
 
-            querySnapshot.forEach((documentSnapshot) => {
-                const data = documentSnapshot.data();
-                const id = documentSnapshot.id;
+  <!-- ── TAB: Add Agency ────────────────────── -->
+  <div class="tab-page" id="page-add">
+    <div class="section-head">
+      <div class="section-title">
+        <i class="bi bi-plus-circle-fill" style="color:#60a5fa"></i>
+        Add Agency Directly
+      </div>
+    </div>
 
-                const card = `
-                    <div class="bg-slate-800 p-6 rounded-lg border border-slate-700 flex justify-between items-center">
-                        <div>
-                            <h2 class="text-xl font-bold">${data.agencyName}</h2>
-                            <p class="text-slate-400">${data.ownerName} (${data.email})</p>
-                            <p class="text-sm text-slate-500">City: ${data.city} | Phone: ${data.phone}</p>
-                        </div>
-                        <button onclick="approveAgency('${id}', '${data.email}', '${data.agencyName}')" class="bg-green-600 hover:bg-green-500 px-4 py-2 rounded font-bold">Approve</button>
-                    </div>
-                `;
-                container.innerHTML += card;
-            });
-        }
+    <div class="card" style="padding:24px">
+      <div class="card-header" style="border:none;padding:0 0 16px">
+        <span class="card-title">New Agency Details</span>
+      </div>
 
-        window.approveAgency = async (requestId, email, agencyName) => {
-            try {
-                // 1. 'agencies' collection mein naya document banayein
-                await setDoc(doc(db, "agencies", email), {
-                    email: email,
-                    agencyName: agencyName,
-                    approved: true,
-                    role: "owner",
-                    approvedAt: new Date()
-                });
+      <div class="form-group">
+        <label class="form-label">Agency Name *</label>
+        <input id="add-agency" class="form-input" type="text" placeholder="e.g. Shri Balaji Gas Agency"/>
+      </div>
+      <div class="form-group">
+        <label class="form-label">Owner Name *</label>
+        <input id="add-owner" class="form-input" type="text" placeholder="e.g. Rajesh Kumar"/>
+      </div>
+      <div class="form-group">
+        <label class="form-label">Google Account Email * <span style="color:rgba(255,255,255,.25);font-weight:400;text-transform:none">(must be their Google email)</span></label>
+        <input id="add-email" class="form-input" type="email" placeholder="name@gmail.com"/>
+      </div>
+      <div class="form-group">
+        <label class="form-label">Role</label>
+        <select id="add-role" class="form-input">
+          <option value="owner">Owner</option>
+          <option value="admin">Admin</option>
+          <option value="manager">Manager</option>
+          <option value="delivery">Delivery</option>
+        </select>
+      </div>
+      <div class="form-group">
+        <label class="form-label">City</label>
+        <input id="add-city" class="form-input" type="text" placeholder="e.g. Bhubaneswar"/>
+      </div>
+      <div class="form-group">
+        <label class="form-label">Phone</label>
+        <input id="add-phone" class="form-input" type="tel" placeholder="+91 99999 99999"/>
+      </div>
 
-                // 2. 'access_requests' se delete karein ya status update karein
-                await deleteDoc(doc(db, "access_requests", requestId));
+      <div id="add-status" class="gate-msg hidden" style="margin-bottom:14px"></div>
 
-                alert("Agency Approved Successfully!");
-                loadRequests();
-            } catch (error) {
-                console.error("Error approving:", error);
-                alert("Something went wrong!");
-            }
-        };
+      <button class="btn btn-primary" style="width:100%;height:48px;font-size:.9rem;justify-content:center" onclick="addAgencyDirect()">
+        <i class="bi bi-plus-circle"></i> Add Agency & Grant Access
+      </button>
+      <div class="form-note" style="margin-top:10px">
+        This will immediately create an approved entry. The user can log in right away with their Google account.
+      </div>
+    </div>
+  </div>
 
-        loadRequests();
-    </script>
+</div><!-- /page-wrap -->
+
+<!-- ══════════════════════════════════════════════
+     CONFIRM MODAL
+══════════════════════════════════════════════ -->
+<div class="confirm-modal" id="confirmModal">
+  <div class="confirm-card">
+    <div class="confirm-icon" id="confirmIcon">⚠️</div>
+    <div class="confirm-title" id="confirmTitle">Are you sure?</div>
+    <div class="confirm-msg" id="confirmMsg">This action cannot be undone.</div>
+    <div class="confirm-btns">
+      <button class="btn btn-view" onclick="closeConfirm()">Cancel</button>
+      <button class="btn btn-reject" id="confirmOkBtn" onclick="confirmOk()">Confirm</button>
+    </div>
+  </div>
+</div>
+
+<!-- ══════════════════════════════════════════════
+     TOAST
+══════════════════════════════════════════════ -->
+<div class="toast" id="toast">
+  <i class="bi bi-check-circle-fill" id="toastIcon"></i>
+  <span id="toastMsg">Done</span>
+</div>
+
+<!-- ══════════════════════════════════════════════
+     FIREBASE v10 MODULAR SDK
+══════════════════════════════════════════════ -->
+<script type="module">
+
+import { initializeApp } from
+  'https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js';
+import {
+  getAuth, signInWithPopup, signOut, onAuthStateChanged, GoogleAuthProvider
+} from 'https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js';
+import {
+  getFirestore,
+  collection, query, orderBy, getDocs,
+  doc, getDoc, setDoc, updateDoc, deleteDoc,
+  addDoc, serverTimestamp, where
+} from 'https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js';
+
+// ── Config ──────────────────────────────────────────────────────
+const FIREBASE_CONFIG = {
+  apiKey:            'AIzaSyBa--BTPVvLBq4wfCJoUKXTbIZwKKdN2zE',
+  authDomain:        'gasagency-b0723.firebaseapp.com',
+  projectId:         'gasagency-b0723',
+  storageBucket:     'gasagency-b0723.firebasestorage.app',
+  messagingSenderId: '179078142870',
+  appId:             '1:179078142870:web:28e76003a3c2a6f18b9bb7'
+};
+const ADMIN_EMAIL        = 'bhagabattudu1999@gmail.com';
+const COL_AGENCIES       = 'agencies';
+const COL_REQUESTS       = 'access_requests';
+
+// ── Init ────────────────────────────────────────────────────────
+const app  = initializeApp(FIREBASE_CONFIG);
+const auth = getAuth(app);
+const db   = getFirestore(app);
+
+// ── DOM helpers ─────────────────────────────────────────────────
+const $   = id => document.getElementById(id);
+const el  = (tag, cls, html) => { const e = document.createElement(tag); if(cls) e.className=cls; if(html) e.innerHTML=html; return e; };
+
+function showToast(msg, type='success') {
+  const t = $('toast'); const i = $('toastIcon'); const m = $('toastMsg');
+  t.className = 'toast ' + type;
+  i.className = type === 'success' ? 'bi bi-check-circle-fill' : 'bi bi-x-circle-fill';
+  m.textContent = msg;
+  t.classList.add('show');
+  setTimeout(() => t.classList.remove('show'), 3000);
+}
+
+function gateMsg(text, type) {
+  const m = $('gateMsg');
+  if (!text) { m.className = 'gate-msg hidden'; m.innerHTML=''; return; }
+  m.className = 'gate-msg ' + type;
+  if (type === 'loading') m.innerHTML = `<span class="spin"></span>${text}`;
+  else m.textContent = text;
+}
+
+function addMsg(text, type) {
+  const m = $('add-status');
+  if (!text) { m.className='gate-msg hidden'; return; }
+  m.className = 'gate-msg ' + type;
+  m.textContent = text;
+}
+
+// ── Auth state ──────────────────────────────────────────────────
+onAuthStateChanged(auth, async user => {
+  if (!user) { showGate(); return; }
+  if (user.email.toLowerCase() !== ADMIN_EMAIL.toLowerCase()) {
+    await signOut(auth);
+    gateMsg('Access denied. This panel is for administrators only.', 'error');
+    showGate(); return;
+  }
+  showPanel(user);
+  loadRequests();
+  loadAgencies();
+});
+
+function showGate() {
+  $('authGate').style.display = 'flex';
+  $('mainNav').style.display   = 'none';
+  $('tabBar').style.display    = 'none';
+  $('mainContent').style.display = 'none';
+}
+function showPanel(user) {
+  $('authGate').style.display   = 'none';
+  $('mainNav').style.display    = 'flex';
+  $('tabBar').style.display     = 'flex';
+  $('mainContent').style.display = 'block';
+  const name = user.displayName || user.email.split('@')[0];
+  $('userAvatar').textContent = name[0].toUpperCase();
+  $('userName').textContent   = name;
+}
+
+// ── Sign in / out ────────────────────────────────────────────────
+window.doAdminSignIn = async () => {
+  const btn = $('gateSignInBtn');
+  btn.disabled = true;
+  gateMsg('Signing in…', 'loading');
+  try {
+    const provider = new GoogleAuthProvider();
+    provider.setCustomParameters({ prompt: 'select_account' });
+    await signInWithPopup(auth, provider);
+  } catch(e) {
+    btn.disabled = false;
+    const m = e.code === 'auth/popup-closed-by-user' ? 'Sign-in cancelled.'
+            : e.code === 'auth/configuration-not-found' ? 'Google Auth not enabled in Firebase Console.'
+            : 'Sign-in failed. Try again.';
+    console.error(e);
+    gateMsg(m, 'error');
+  }
+};
+
+window.doSignOut = async () => {
+  if (!confirm('Sign out from admin panel?')) return;
+  await signOut(auth);
+};
+
+// ── Tab switching ────────────────────────────────────────────────
+let currentTab = 'requests';
+window.switchTab = (tab) => {
+  document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+  document.querySelectorAll('.tab-page').forEach(p => p.classList.remove('active'));
+  $('tab-' + tab) && $('tab-' + tab).classList.add('active');
+  $('page-' + tab) && $('page-' + tab).classList.add('active');
+  currentTab = tab;
+};
+
+// ── Date formatter ───────────────────────────────────────────────
+function fmtDate(ts) {
+  if (!ts) return '—';
+  const d = ts.toDate ? ts.toDate() : new Date(ts);
+  return d.toLocaleDateString('en-IN', { day:'2-digit', month:'short', year:'numeric' })
+       + ' ' + d.toLocaleTimeString('en-IN', { hour:'2-digit', minute:'2-digit' });
+}
+
+// ═════════════════════════════════════════════════════════════════
+// LOAD ACCESS REQUESTS
+// ═════════════════════════════════════════════════════════════════
+let allRequests = [];
+let reqFilter   = 'all';
+
+window.loadRequests = async () => {
+  $('requests-list').innerHTML = `<div class="loading-row"><span class="spin spin-lg"></span> Loading...</div>`;
+  try {
+    const snap = await getDocs(query(collection(db, COL_REQUESTS), orderBy('submittedAt','desc')));
+    allRequests = snap.docs.map(d => ({ id: d.id, ...d.data() }));
+    updateReqStats();
+    renderRequests();
+  } catch(e) {
+    console.error(e);
+    $('requests-list').innerHTML = `<div class="empty"><i class="bi bi-exclamation-triangle"></i>Failed to load. Check Firestore rules.<br/><small>${e.message}</small></div>`;
+  }
+};
+
+function updateReqStats() {
+  const pending  = allRequests.filter(r => r.status === 'pending').length;
+  const approved = allRequests.filter(r => r.status === 'approved').length;
+  const rejected = allRequests.filter(r => r.status === 'rejected').length;
+  $('stat-pending').textContent      = pending;
+  $('stat-approved-req').textContent = approved;
+  $('stat-rejected').textContent     = rejected;
+  $('cnt-requests').textContent      = allRequests.length;
+  if (pending > 0) $('cnt-requests').classList.add('has-new');
+  else             $('cnt-requests').classList.remove('has-new');
+}
+
+function renderRequests() {
+  const list = reqFilter === 'all' ? allRequests
+             : allRequests.filter(r => r.status === reqFilter);
+  const c = $('requests-list');
+  if (!list.length) {
+    c.innerHTML = `<div class="empty"><i class="bi bi-inbox"></i>${reqFilter === 'pending' ? 'No pending requests.' : 'No requests found.'}</div>`;
+    return;
+  }
+  c.innerHTML = '';
+  list.forEach(req => c.appendChild(buildRequestRow(req)));
+}
+
+function buildRequestRow(req) {
+  const wrap = el('div','row-item');
+  wrap.id = 'req-row-' + req.id;
+
+  const iconClass = req.status === 'approved' ? 'approved' : req.status === 'rejected' ? 'rejected' : 'pending';
+  const iconName  = req.status === 'approved' ? 'check-circle-fill' : req.status === 'rejected' ? 'x-circle-fill' : 'clock-fill';
+
+  const actionsHTML = req.status === 'pending'
+    ? `<button class="btn btn-approve" onclick="approveRequest('${req.id}','${req.email}','${(req.agencyName||'').replace(/'/g,'\\\'')}')" title="Approve and grant access">
+         <i class="bi bi-check-lg"></i> Approve
+       </button>
+       <button class="btn btn-reject" onclick="rejectRequest('${req.id}')" title="Reject request">
+         <i class="bi bi-x-lg"></i> Reject
+       </button>`
+    : `<span class="badge ${req.status}">${req.status}</span>`;
+
+  wrap.innerHTML = `
+    <div class="row-icon ${iconClass}"><i class="bi bi-${iconName}"></i></div>
+    <div class="row-body">
+      <div class="row-name">${req.agencyName || 'Unnamed Agency'}</div>
+      <div class="row-email">${req.email || '—'}</div>
+      <div class="row-meta">
+        ${req.ownerName ? req.ownerName + ' · ' : ''}
+        ${req.city ? req.city + ' · ' : ''}
+        ${req.phone || ''}
+        <span style="float:right;font-size:.65rem">${fmtDate(req.submittedAt)}</span>
+      </div>
+      ${req.message ? `<div class="row-meta" style="margin-top:6px;font-style:italic;color:rgba(255,255,255,.35)">"${req.message}"</div>` : ''}
+    </div>
+    <div class="row-actions">${actionsHTML}</div>`;
+  return wrap;
+}
+
+window.filterReqs = (f) => {
+  reqFilter = f;
+  renderRequests();
+};
+
+// ── Approve Request ──────────────────────────────────────────────
+window.approveRequest = (reqId, email, agencyName) => {
+  showConfirm(
+    '✅', 'Approve Request?',
+    `Grant dashboard access to ${email}?\nA new agency entry will be created.`,
+    'btn-approve', 'Approve',
+    async () => {
+      try {
+        // 1. Create / update agency doc
+        await setDoc(doc(db, COL_AGENCIES, email.toLowerCase()), {
+          email:      email.toLowerCase(),
+          agencyName: agencyName || '',
+          role:       'owner',
+          approved:   true,
+          approvedAt: serverTimestamp(),
+        }, { merge: true });
+        // 2. Mark request as approved
+        await updateDoc(doc(db, COL_REQUESTS, reqId), {
+          status: 'approved', reviewedAt: serverTimestamp()
+        });
+        // 3. Update local state
+        const r = allRequests.find(x => x.id === reqId);
+        if (r) r.status = 'approved';
+        updateReqStats();
+        renderRequests();
+        // 4. Reload agencies tab
+        await loadAgencies();
+        showToast('Access granted to ' + email);
+      } catch(e) {
+        console.error(e); showToast('Error: ' + e.message, 'error');
+      }
+    }
+  );
+};
+
+// ── Reject Request ───────────────────────────────────────────────
+window.rejectRequest = (reqId) => {
+  showConfirm(
+    '🚫', 'Reject Request?',
+    'This request will be marked as rejected.',
+    'btn-reject', 'Reject',
+    async () => {
+      try {
+        await updateDoc(doc(db, COL_REQUESTS, reqId), {
+          status: 'rejected', reviewedAt: serverTimestamp()
+        });
+        const r = allRequests.find(x => x.id === reqId);
+        if (r) r.status = 'rejected';
+        updateReqStats();
+        renderRequests();
+        showToast('Request rejected.');
+      } catch(e) {
+        console.error(e); showToast('Error: ' + e.message, 'error');
+      }
+    }
+  );
+};
+
+// ═════════════════════════════════════════════════════════════════
+// LOAD AGENCIES
+// ═════════════════════════════════════════════════════════════════
+let allAgencies = [];
+
+window.loadAgencies = async () => {
+  $('agencies-list').innerHTML = `<div class="loading-row"><span class="spin spin-lg"></span> Loading...</div>`;
+  try {
+    const snap = await getDocs(collection(db, COL_AGENCIES));
+    allAgencies = snap.docs.map(d => ({ id: d.id, ...d.data() }));
+    $('stat-total-agencies').textContent = allAgencies.length;
+    $('stat-active').textContent = allAgencies.filter(a => a.approved !== false).length;
+    $('cnt-agencies').textContent = allAgencies.length;
+    renderAgencies();
+  } catch(e) {
+    console.error(e);
+    $('agencies-list').innerHTML = `<div class="empty"><i class="bi bi-exclamation-triangle"></i>Failed to load. Check Firestore rules.</div>`;
+  }
+};
+
+function renderAgencies() {
+  const c = $('agencies-list');
+  if (!allAgencies.length) {
+    c.innerHTML = `<div class="empty"><i class="bi bi-building"></i>No agencies found.<br/>Add one using the "Add Agency" tab.</div>`;
+    return;
+  }
+  c.innerHTML = '';
+  allAgencies.forEach(ag => c.appendChild(buildAgencyRow(ag)));
+}
+
+function buildAgencyRow(ag) {
+  const wrap = el('div','row-item');
+  wrap.id = 'ag-row-' + ag.id;
+  const active = ag.approved !== false;
+
+  wrap.innerHTML = `
+    <div class="row-icon ${active ? 'approved' : 'rejected'}">
+      <i class="bi bi-${active ? 'building-fill' : 'building'}"></i>
+    </div>
+    <div class="row-body">
+      <div class="row-name">${ag.agencyName || 'Unnamed'}</div>
+      <div class="row-email">${ag.email || ag.id}</div>
+      <div class="row-meta">
+        <span class="badge ${ag.role || 'owner'}" style="margin-right:5px">${ag.role || 'owner'}</span>
+        ${ag.city ? ag.city : ''}
+        ${ag.phone ? ' · ' + ag.phone : ''}
+        ${ag.approvedAt ? '<span style="float:right;font-size:.65rem">'+fmtDate(ag.approvedAt)+'</span>' : ''}
+      </div>
+    </div>
+    <div class="row-actions">
+      ${active
+        ? `<button class="btn btn-revoke" onclick="revokeAgency('${ag.id}','${ag.email||ag.id}')">
+             <i class="bi bi-slash-circle"></i> Revoke
+           </button>`
+        : `<button class="btn btn-approve" onclick="restoreAgency('${ag.id}')">
+             <i class="bi bi-check-lg"></i> Restore
+           </button>`
+      }
+      <button class="btn btn-reject" style="padding:6px 8px" onclick="deleteAgency('${ag.id}','${ag.agencyName||'this agency'}')" title="Delete permanently">
+        <i class="bi bi-trash"></i>
+      </button>
+    </div>`;
+  return wrap;
+}
+
+// ── Revoke Access ────────────────────────────────────────────────
+window.revokeAgency = (docId, email) => {
+  showConfirm(
+    '🚫', 'Revoke Access?',
+    `${email} will no longer be able to log in.`,
+    'btn-reject', 'Revoke',
+    async () => {
+      try {
+        await updateDoc(doc(db, COL_AGENCIES, docId), { approved: false });
+        await loadAgencies();
+        showToast('Access revoked for ' + email);
+      } catch(e) { console.error(e); showToast('Error: ' + e.message, 'error'); }
+    }
+  );
+};
+
+// ── Restore Access ───────────────────────────────────────────────
+window.restoreAgency = (docId) => {
+  showConfirm(
+    '✅', 'Restore Access?',
+    'This agency will be able to log in again.',
+    'btn-approve', 'Restore',
+    async () => {
+      try {
+        await updateDoc(doc(db, COL_AGENCIES, docId), { approved: true, approvedAt: serverTimestamp() });
+        await loadAgencies();
+        showToast('Access restored.');
+      } catch(e) { console.error(e); showToast('Error: ' + e.message, 'error'); }
+    }
+  );
+};
+
+// ── Delete Agency permanently ────────────────────────────────────
+window.deleteAgency = (docId, name) => {
+  showConfirm(
+    '🗑️', 'Delete Agency?',
+    `Delete "${name}" permanently? This cannot be undone.`,
+    'btn-reject', 'Delete',
+    async () => {
+      try {
+        await deleteDoc(doc(db, COL_AGENCIES, docId));
+        await loadAgencies();
+        showToast('Agency deleted.');
+      } catch(e) { console.error(e); showToast('Error: ' + e.message, 'error'); }
+    }
+  );
+};
+
+// ═════════════════════════════════════════════════════════════════
+// ADD AGENCY DIRECTLY
+// ═════════════════════════════════════════════════════════════════
+window.addAgencyDirect = async () => {
+  const agencyName = $('add-agency').value.trim();
+  const ownerName  = $('add-owner').value.trim();
+  const email      = $('add-email').value.trim().toLowerCase();
+  const role       = $('add-role').value;
+  const city       = $('add-city').value.trim();
+  const phone      = $('add-phone').value.trim();
+
+  if (!agencyName) { addMsg('Please enter agency name.', 'error'); return; }
+  if (!ownerName)  { addMsg('Please enter owner name.', 'error');  return; }
+  if (!email || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
+    addMsg('Please enter a valid email address.', 'error'); return;
+  }
+
+  addMsg('Creating agency…', 'loading');
+  try {
+    await setDoc(doc(db, COL_AGENCIES, email), {
+      email, agencyName, ownerName, role,
+      city:   city  || null,
+      phone:  phone || null,
+      approved:   true,
+      approvedAt: serverTimestamp(),
+      createdBy:  auth.currentUser?.email || ADMIN_EMAIL,
+    });
+
+    // Clear form
+    ['add-agency','add-owner','add-email','add-city','add-phone'].forEach(id => $(id).value = '');
+    $('add-role').value = 'owner';
+    addMsg('', null);
+
+    await loadAgencies();
+    switchTab('agencies');
+    showToast('Agency added: ' + agencyName);
+  } catch(e) {
+    console.error(e);
+    addMsg('Error: ' + e.message, 'error');
+  }
+};
+
+// ═════════════════════════════════════════════════════════════════
+// CONFIRM MODAL
+// ═════════════════════════════════════════════════════════════════
+let _confirmCallback = null;
+
+function showConfirm(icon, title, msg, btnClass, btnLabel, cb) {
+  $('confirmIcon').textContent  = icon;
+  $('confirmTitle').textContent = title;
+  $('confirmMsg').textContent   = msg;
+  $('confirmOkBtn').className   = 'btn ' + btnClass;
+  $('confirmOkBtn').textContent = btnLabel;
+  _confirmCallback = cb;
+  $('confirmModal').classList.add('show');
+}
+window.closeConfirm = () => { $('confirmModal').classList.remove('show'); _confirmCallback = null; };
+window.confirmOk = async () => {
+  $('confirmModal').classList.remove('show');
+  if (_confirmCallback) { await _confirmCallback(); _confirmCallback = null; }
+};
+
+</script>
 </body>
 </html>
